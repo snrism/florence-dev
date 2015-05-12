@@ -20,25 +20,46 @@ import oftest.malformed_message as malformed_message
 from oftest.testutils import *
 
 @group('smoke')
-class MalformedMessage(base_tests.SimpleProtocol):
+class MalformedMessageType(base_tests.SimpleProtocol):
     """
     Send a message with a bad type and verify an error is returned
     """
 
     def runTest(self):
         logging.info("Running " + str(self))
-        request = malformed_message.malformed_message(version=4, type=217)
+        request = malformed_message.malformed_message(version=4, type=97)
 
         reply, pkt = self.controller.transact(request)
         logging.info(repr(pkt))
-        self.assertTrue(reply is not None, "OF1.3 No response to bad req")
+        self.assertTrue(reply is not None, "No response to bad req")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "OF1.3 reply not an error message")
+                        "reply not an error message")
         logging.info(reply.err_type)
         self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
-                        "OF1.3 reply error type is not bad request")
+                        "reply error type is not bad request")
         self.assertTrue(reply.code == ofp.OFPBRC_BAD_TYPE,
-                        "OF1.3 reply error code is not bad type")
+                        "reply error code is not bad type {0}".format(reply.code))
+
+@group('smoke')
+class MalformedMessageVersion(base_tests.SimpleProtocol):
+    """
+    Send a message with a bad type and verify an error is returned
+    """
+
+    def runTest(self):
+        logging.info("Running " + str(self))
+        request = malformed_message.malformed_message(version=0, type=0)
+
+        reply, pkt = self.controller.transact(request)
+        logging.info(repr(pkt))
+        self.assertTrue(reply is not None, "No response to bad req")
+        self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                        "reply not an error message")
+        logging.info(reply.err_type)
+        self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
+                        "reply error type is not bad request")
+        self.assertTrue(reply.code == ofp.OFPBRC_BAD_VERSION,
+                        "reply error code is not bad type {0}".format(reply.code))
 
 @group('smoke')
 class Echo(base_tests.SimpleProtocol):

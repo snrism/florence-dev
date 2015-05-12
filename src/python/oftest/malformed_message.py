@@ -1,15 +1,17 @@
 """
-Support an illegal message
+Check Malformed OpenFlow control message
 """
 
 import struct
 import ofp
 
-class illegal_message_type(object):
-    version = ofp.OFP_VERSION
-    type = 217
+class malformed_message(object):
+    #version = ofp.OFP_VERSION
+    #type = 217
 
-    def __init__(self, xid=None):
+    def __init__(self, version=None, type=None, xid=None):
+        self.version = version
+        self.type = type
         self.xid = xid
 
     def pack(self):
@@ -40,4 +42,4 @@ class illegal_message_type(object):
         return self.show()
 
     def show(self):
-        return "illegal_message_type"
+        return "malformed_control_message"
