@@ -43,12 +43,33 @@ class MalformedMessageType(base_tests.SimpleProtocol):
 @group('smoke')
 class MalformedMessageVersion(base_tests.SimpleProtocol):
     """
-    Send a message with a bad type and verify an error is returned
+    Send a message with a bad version and verify an error is returned
     """
 
     def runTest(self):
         logging.info("Running " + str(self))
         request = malformed_message.malformed_message(version=0, type=0)
+
+        reply, pkt = self.controller.transact(request)
+        logging.info(repr(pkt))
+        self.assertTrue(reply is not None, "No response to bad req")
+        self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                        "reply not an error message")
+        logging.info(reply.err_type)
+        self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
+                        "reply error type is not bad request")
+        self.assertTrue(reply.code == ofp.OFPBRC_BAD_VERSION,
+                        "reply error code is not bad type {0}".format(reply.code))
+
+@group('smoke')
+class MalformedMessageLength(base_tests.SimpleProtocol):
+    """
+    Send a message with a bad length and verify an error is returned
+    """
+
+    def runTest(self):
+        logging.info("Running " + str(self))
+        request = malformed_message.malformed_message(version=4, type=1, length=100)
 
         reply, pkt = self.controller.transact(request)
         logging.info(repr(pkt))

@@ -62,13 +62,16 @@ class instruction(loxi.OFObject):
 
 
 class apply_actions(instruction):
-    type = 4
 
-    def __init__(self, actions=None):
+    def __init__(self, actions=None, type=None):
         if actions != None:
             self.actions = actions
         else:
             self.actions = []
+	if type != None:
+	    self.type = type
+	else:
+	    self.type = 4
         return
 
     def pack(self):

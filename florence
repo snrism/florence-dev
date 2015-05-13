@@ -72,10 +72,10 @@ CONFIG_DEFAULT = {
     "platform_args"      : None,
     "platform_dir"       : os.path.join(ROOT_DIR, "platforms"),
     "interfaces"         : [],
-    "openflow_version"   : "1.0",
+    "openflow_version"   : "1.3",
 
     # Logging options
-    "log_file"           : "oft.log",
+    "log_file"           : "florence.log",
     "log_dir"            : None,
     "debug"              : "verbose",
     "profile"            : False,
@@ -223,7 +223,7 @@ prefixing them with the '^' character.
         if options.openflow_version == "1.0":
             options.test_dir = os.path.join(ROOT_DIR, "tests")
         else:
-            options.test_dir = os.path.join(ROOT_DIR, "tests-" + options.openflow_version)
+            options.test_dir = os.path.join(ROOT_DIR, "tests-1.3")
 
     # Convert options from a Namespace to a plain dictionary
     config = CONFIG_DEFAULT.copy()

@@ -1,0 +1,2 @@
+15:45:32.719  root      : INFO    : ++++++++ Wed May 13 15:45:32 2015 ++++++++
+15:45:32.827  scapy.runtime: WARNING : No route found for IPv6 destination :: (no default route?)

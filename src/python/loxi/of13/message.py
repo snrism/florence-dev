@@ -9288,7 +9288,7 @@ message.subtypes[2] = echo_request
 
 class experimenter_error_msg(error_msg):
     version = 4
-    type = 1
+    type = 4
     err_type = 65535
 
     def __init__(self, xid=None, subtype=None, experimenter=None, data=None):
@@ -9736,10 +9736,10 @@ message.subtypes[14] = flow_mod
 
 class flow_add(flow_mod):
     version = 4
-    type = 14
+    #type = 14
     _command = 0
 
-    def __init__(self, xid=None, cookie=None, cookie_mask=None, table_id=None, idle_timeout=None, hard_timeout=None, priority=None, buffer_id=None, out_port=None, out_group=None, flags=None, match=None, instructions=None):
+    def __init__(self, xid=None, cookie=None, cookie_mask=None, table_id=None, idle_timeout=None, hard_timeout=None, priority=None, buffer_id=None, out_port=None, out_group=None, flags=None, match=None, instructions=None, type=None, length=None):
         if xid != None:
             self.xid = xid
         else:
@@ -9792,7 +9792,12 @@ class flow_add(flow_mod):
             self.instructions = instructions
         else:
             self.instructions = []
-        return
+	if type != None:
+            self.type = type
+        else:
+	    self.type = 14
+        self.length = length
+	return
 
     def pack(self):
         packed = []
@@ -9814,8 +9819,11 @@ class flow_add(flow_mod):
         packed.append('\x00' * 2)
         packed.append(self.match.pack())
         packed.append(loxi.generic_util.pack_list(self.instructions))
-        length = sum([len(x) for x in packed])
-        packed[2] = struct.pack("!H", length)
+	if self.length != None:
+	    packed[2] = struct.pack("!H", self.length)
+	else:
+            total_length = sum([len(x) for x in packed])
+            packed[2] = struct.pack("!H", total_length)
         return ''.join(packed)
 
     @staticmethod
