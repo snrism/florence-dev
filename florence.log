@@ -1,2 +1,366 @@
-15:45:32.719  root      : INFO    : ++++++++ Wed May 13 15:45:32 2015 ++++++++
-15:45:32.827  scapy.runtime: WARNING : No route found for IPv6 destination :: (no default route?)
+23:43:07.853  root      : INFO    : ++++++++ Wed May 13 23:43:07 2015 ++++++++
+23:43:07.961  scapy.runtime: WARNING : No route found for IPv6 destination :: (no default route?)
+23:43:07.984  root      : INFO    : Importing platform: eth
+23:43:07.985  root      : DEBUG   : Configuration: {'profile': False, 'default_timeout': 2.0, 'platform_args': None, 'xunit_dir': 'xunit', 'disable_ipv6': False, 'random_seed': None, 'interfaces': [], 'port_map': {1: 'veth1', 2: 'veth3', 3: 'veth5', 4: 'veth7'}, 'minsize': 0, 'list_test_names': False, 'openflow_version': '1.3', 'switch_ip': None, 'controller_host': '0.0.0.0', 'default_negative_timeout': 0.01, 'allow_user': False, 'controller_port': 6653, 'test_file': None, 'profile_file': 'profile.out', 'fail_skipped': False, 'test_params': 'None', 'test_dir': '/home/ubuntu/florence/tests-1.3', 'relax': False, 'list': False, 'test_spec': '', 'platform': 'eth', 'log_dir': None, 'xunit': False, 'debug': 'verbose', 'log_file': 'florence.log', 'random_order': False, 'platform_dir': '/home/ubuntu/florence/platforms'}
+23:43:07.985  root      : INFO    : OF port map: {1: 'veth1', 2: 'veth3', 3: 'veth5', 4: 'veth7'}
+23:43:07.985  root      : INFO    : Autogen random seed: 50481249
+23:43:07.987  root      : INFO    : *** TEST RUN START: Wed May 13 23:43:07 2015
+23:43:07.988  root      : INFO    : ** START TEST CASE conformance.BadExperimenterId
+23:43:07.988  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:08.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46092)
+23:43:08.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 2153622342
+23:43:08.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 802
+23:43:08.957  root      : INFO    : Connected ('127.0.0.1', 46092)
+23:43:08.957  controller: DEBUG   : Running transaction 888027617
+23:43:08.957  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 888027617
+23:43:08.958  controller: DEBUG   : Waiting for transaction 888027617
+23:43:08.958  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 888027617
+23:43:08.958  controller: DEBUG   : Matched expected XID 888027617
+23:43:08.959  root      : INFO    : Generating Bad Experimenter Id
+23:43:08.959  controller: DEBUG   : Running transaction 3887427914
+23:43:08.960  controller: DEBUG   : Msg out: version 4 class experimenter_error_msg len 16 xid 3887427914
+23:43:08.960  controller: DEBUG   : Waiting for transaction 3887427914
+23:43:08.960  controller: DEBUG   : Msg in: version 4 class bad_request_error_msg len 28 xid 3887427914
+23:43:08.961  controller: DEBUG   : Matched expected XID 3887427914
+23:43:08.961  root      : INFO    : 3
+23:43:08.962  controller: INFO    : Ignoring listen soc shutdown error
+23:43:08.962  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80fd2de0>
+23:43:08.962  controller: INFO    : Exiting controller thread
+23:43:08.962  controller: INFO    : Ignoring switch soc shutdown error
+23:43:08.962  controller: INFO    : Ignoring listen soc shutdown error
+23:43:08.963  root      : INFO    : ** END TEST CASE conformance.BadExperimenterId
+23:43:08.963  root      : INFO    : ** START TEST CASE conformance.BadExperimenterType
+23:43:08.964  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:09.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46093)
+23:43:09.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 925040801
+23:43:09.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 803
+23:43:09.982  root      : INFO    : Connected ('127.0.0.1', 46093)
+23:43:09.982  controller: DEBUG   : Running transaction 31212431
+23:43:09.982  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 31212431
+23:43:09.983  controller: DEBUG   : Waiting for transaction 31212431
+23:43:09.983  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 31212431
+23:43:09.983  controller: DEBUG   : Matched expected XID 31212431
+23:43:09.984  root      : INFO    : Generating Bad Experimenter Field
+23:43:09.984  controller: DEBUG   : Running transaction 402556161
+23:43:09.984  controller: DEBUG   : Msg out: version 4 class experimenter_error_msg len 16 xid 402556161
+23:43:09.985  controller: DEBUG   : Waiting for transaction 402556161
+23:43:09.985  controller: DEBUG   : Msg in: version 4 class bad_request_error_msg len 28 xid 402556161
+23:43:09.985  controller: DEBUG   : Matched expected XID 402556161
+23:43:09.986  root      : INFO    : 3
+23:43:09.987  controller: INFO    : Ignoring listen soc shutdown error
+23:43:09.987  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80fd2d70>
+23:43:09.987  controller: INFO    : Exiting controller thread
+23:43:09.987  controller: INFO    : Ignoring switch soc shutdown error
+23:43:09.987  controller: INFO    : Ignoring listen soc shutdown error
+23:43:09.987  root      : INFO    : ** END TEST CASE conformance.BadExperimenterType
+23:43:09.988  root      : INFO    : ** START TEST CASE conformance.BadMatchLength
+23:43:09.988  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:10.934  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46095)
+23:43:10.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 2851181683
+23:43:10.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 804
+23:43:10.956  root      : INFO    : Connected ('127.0.0.1', 46095)
+23:43:10.956  controller: DEBUG   : Running transaction 1490866672
+23:43:10.957  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 1490866672
+23:43:10.957  controller: DEBUG   : Waiting for transaction 1490866672
+23:43:10.957  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 1490866672
+23:43:10.957  controller: DEBUG   : Matched expected XID 1490866672
+23:43:10.958  root      : INFO    : Deleting all flows
+23:43:10.959  controller: DEBUG   : Msg out: version 4 class flow_delete len 56 xid 3268629881
+23:43:10.960  controller: DEBUG   : Running transaction 632307733
+23:43:10.960  controller: DEBUG   : Msg out: version 4 class barrier_request len 8 xid 632307733
+23:43:10.961  controller: DEBUG   : Waiting for transaction 632307733
+23:43:10.961  controller: DEBUG   : Msg in: version 4 class barrier_reply len 8 xid 632307733
+23:43:10.961  controller: DEBUG   : Matched expected XID 632307733
+23:43:10.962  root      : INFO    : Inserting flow with bad match length
+23:43:10.962  controller: DEBUG   : Running transaction 4061986110
+23:43:10.964  controller: DEBUG   : Msg out: version 4 class flow_add len 88 xid 4061986110
+23:43:10.965  controller: DEBUG   : Waiting for transaction 4061986110
+23:43:12.965  controller: WARNING : No response for xid 4061986110
+23:43:12.966  root      : ERROR   : ** FAILED ASSERTION: No response to bad match length
+23:43:12.967  controller: INFO    : Exiting controller thread
+23:43:12.967  controller: INFO    : Ignoring switch soc shutdown error
+23:43:12.967  controller: INFO    : Ignoring listen soc shutdown error
+23:43:12.967  controller: INFO    : Ignoring listen soc shutdown error
+23:43:12.967  root      : INFO    : ** END TEST CASE conformance.BadMatchLength
+23:43:12.968  root      : INFO    : ** START TEST CASE conformance.BadPreReqMatch
+23:43:12.968  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:13.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46096)
+23:43:13.936  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 373392849
+23:43:13.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 805
+23:43:13.986  root      : INFO    : Connected ('127.0.0.1', 46096)
+23:43:13.986  controller: DEBUG   : Running transaction 2790905094
+23:43:13.986  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 2790905094
+23:43:13.987  controller: DEBUG   : Waiting for transaction 2790905094
+23:43:13.987  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 2790905094
+23:43:13.987  controller: DEBUG   : Matched expected XID 2790905094
+23:43:13.988  root      : INFO    : Deleting all flows
+23:43:13.988  controller: DEBUG   : Msg out: version 4 class flow_delete len 56 xid 1405823192
+23:43:13.989  controller: DEBUG   : Running transaction 2910211038
+23:43:13.989  controller: DEBUG   : Msg out: version 4 class barrier_request len 8 xid 2910211038
+23:43:13.989  controller: DEBUG   : Waiting for transaction 2910211038
+23:43:13.989  controller: DEBUG   : Msg in: version 4 class barrier_reply len 8 xid 2910211038
+23:43:13.989  controller: DEBUG   : Matched expected XID 2910211038
+23:43:13.990  root      : INFO    : Inserting flow with bad pre-requisite
+23:43:13.991  controller: DEBUG   : Running transaction 2469700743
+23:43:13.991  controller: DEBUG   : Msg out: version 4 class flow_add len 104 xid 2469700743
+23:43:13.991  controller: DEBUG   : Waiting for transaction 2469700743
+23:43:13.992  controller: DEBUG   : Msg in: version 4 class bad_match_error_msg len 76 xid 2469700743
+23:43:13.992  controller: DEBUG   : Matched expected XID 2469700743
+23:43:13.993  controller: INFO    : Ignoring listen soc shutdown error
+23:43:13.993  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80f8c6e0>
+23:43:13.994  controller: INFO    : Exiting controller thread
+23:43:13.994  controller: INFO    : Ignoring switch soc shutdown error
+23:43:13.994  controller: INFO    : Ignoring listen soc shutdown error
+23:43:13.994  root      : INFO    : ** END TEST CASE conformance.BadPreReqMatch
+23:43:13.995  root      : INFO    : ** START TEST CASE conformance.DuplicateMatchField
+23:43:13.995  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:14.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46097)
+23:43:14.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 357753310
+23:43:14.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 806
+23:43:14.963  root      : INFO    : Connected ('127.0.0.1', 46097)
+23:43:14.963  controller: DEBUG   : Running transaction 3650129210
+23:43:14.963  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 3650129210
+23:43:14.964  controller: DEBUG   : Waiting for transaction 3650129210
+23:43:14.964  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 3650129210
+23:43:14.964  controller: DEBUG   : Matched expected XID 3650129210
+23:43:14.965  root      : INFO    : Deleting all flows
+23:43:14.966  controller: DEBUG   : Msg out: version 4 class flow_delete len 56 xid 920070310
+23:43:14.966  controller: DEBUG   : Running transaction 679815143
+23:43:14.966  controller: DEBUG   : Msg out: version 4 class barrier_request len 8 xid 679815143
+23:43:14.967  controller: DEBUG   : Waiting for transaction 679815143
+23:43:14.967  controller: DEBUG   : Msg in: version 4 class barrier_reply len 8 xid 679815143
+23:43:14.967  controller: DEBUG   : Matched expected XID 679815143
+23:43:14.968  root      : INFO    : Inserting flow with duplicate match field
+23:43:14.968  controller: DEBUG   : Running transaction 1920010118
+23:43:14.968  controller: DEBUG   : Msg out: version 4 class flow_add len 96 xid 1920010118
+23:43:14.969  controller: DEBUG   : Waiting for transaction 1920010118
+23:43:14.969  controller: DEBUG   : Msg in: version 4 class bad_match_error_msg len 76 xid 1920010118
+23:43:14.969  controller: DEBUG   : Matched expected XID 1920010118
+23:43:14.971  controller: INFO    : Ignoring listen soc shutdown error
+23:43:14.971  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80f8c6e0>
+23:43:14.971  controller: INFO    : Exiting controller thread
+23:43:14.971  controller: INFO    : Ignoring switch soc shutdown error
+23:43:14.971  controller: INFO    : Ignoring listen soc shutdown error
+23:43:14.971  root      : INFO    : ** END TEST CASE conformance.DuplicateMatchField
+23:43:14.972  root      : INFO    : ** START TEST CASE conformance.MalformedControlType
+23:43:14.973  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:15.936  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46098)
+23:43:15.936  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 148263399
+23:43:15.937  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 807
+23:43:15.940  root      : INFO    : Connected ('127.0.0.1', 46098)
+23:43:15.940  controller: DEBUG   : Running transaction 3667604423
+23:43:15.941  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 3667604423
+23:43:15.941  controller: DEBUG   : Waiting for transaction 3667604423
+23:43:15.941  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 3667604423
+23:43:15.942  controller: DEBUG   : Matched expected XID 3667604423
+23:43:15.943  root      : INFO    : Deleting all flows
+23:43:15.943  controller: DEBUG   : Msg out: version 4 class flow_delete len 56 xid 4228933197
+23:43:15.943  controller: DEBUG   : Running transaction 1823859628
+23:43:15.943  controller: DEBUG   : Msg out: version 4 class barrier_request len 8 xid 1823859628
+23:43:15.944  controller: DEBUG   : Waiting for transaction 1823859628
+23:43:15.944  controller: DEBUG   : Msg in: version 4 class barrier_reply len 8 xid 1823859628
+23:43:15.944  controller: DEBUG   : Matched expected XID 1823859628
+23:43:15.945  root      : INFO    : Inserting flow with malformed control message type
+23:43:15.945  controller: DEBUG   : Running transaction 4122544758
+23:43:15.945  controller: DEBUG   : Msg out: version 4 class flow_add len 88 xid 4122544758
+23:43:15.946  controller: DEBUG   : Waiting for transaction 4122544758
+23:43:15.947  controller: DEBUG   : Msg in: version 4 class bad_request_error_msg len 76 xid 4122544758
+23:43:15.947  controller: DEBUG   : Matched expected XID 4122544758
+23:43:15.948  controller: INFO    : Ignoring listen soc shutdown error
+23:43:15.948  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80f8c6e0>
+23:43:15.948  controller: INFO    : Exiting controller thread
+23:43:15.948  controller: INFO    : Ignoring switch soc shutdown error
+23:43:15.949  controller: INFO    : Ignoring listen soc shutdown error
+23:43:15.949  root      : INFO    : ** END TEST CASE conformance.MalformedControlType
+23:43:15.950  root      : INFO    : ** START TEST CASE conformance.MalformedHeaderLength
+23:43:15.950  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:16.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46099)
+23:43:16.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 3383564118
+23:43:16.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 808
+23:43:16.967  root      : INFO    : Connected ('127.0.0.1', 46099)
+23:43:16.968  controller: DEBUG   : Running transaction 2810242287
+23:43:16.968  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 2810242287
+23:43:16.969  controller: DEBUG   : Waiting for transaction 2810242287
+23:43:16.969  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 2810242287
+23:43:16.969  controller: DEBUG   : Matched expected XID 2810242287
+23:43:16.970  root      : INFO    : Running conformance.MalformedHeaderLength
+23:43:16.970  controller: DEBUG   : Running transaction 995982999
+23:43:16.970  controller: DEBUG   : Msg out: version 4 class malformed_message len 8 xid 995982999
+23:43:16.971  controller: DEBUG   : Waiting for transaction 995982999
+23:43:18.971  controller: WARNING : No response for xid 995982999
+23:43:18.971  root      : INFO    : None
+23:43:18.971  root      : ERROR   : ** FAILED ASSERTION: No response to malformed message length
+23:43:18.972  controller: INFO    : Exiting controller thread
+23:43:18.973  controller: INFO    : Ignoring switch soc shutdown error
+23:43:18.973  controller: INFO    : Ignoring listen soc shutdown error
+23:43:18.973  controller: INFO    : Ignoring listen soc shutdown error
+23:43:18.973  root      : INFO    : ** END TEST CASE conformance.MalformedHeaderLength
+23:43:18.974  root      : INFO    : ** START TEST CASE conformance.MalformedHeaderType
+23:43:18.974  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:19.936  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46101)
+23:43:19.936  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 2519739334
+23:43:19.937  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 809
+23:43:19.942  root      : INFO    : Connected ('127.0.0.1', 46101)
+23:43:19.942  controller: DEBUG   : Running transaction 167321870
+23:43:19.942  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 167321870
+23:43:19.943  controller: DEBUG   : Waiting for transaction 167321870
+23:43:19.943  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 167321870
+23:43:19.943  controller: DEBUG   : Matched expected XID 167321870
+23:43:19.944  root      : INFO    : Running conformance.MalformedHeaderType
+23:43:19.944  controller: DEBUG   : Running transaction 649626422
+23:43:19.944  controller: DEBUG   : Msg out: version 4 class malformed_message len 8 xid 649626422
+23:43:19.945  controller: DEBUG   : Waiting for transaction 649626422
+23:43:19.945  controller: DEBUG   : Msg in: version 4 class bad_request_error_msg len 20 xid 649626422
+23:43:19.945  controller: DEBUG   : Matched expected XID 649626422
+23:43:19.946  root      : INFO    : '\x04\x01\x00\x14&\xb8\x836\x00\x01\x00\x01\x04a\x00\x08&\xb8\x836'
+23:43:19.946  root      : INFO    : 1
+23:43:19.947  controller: INFO    : Ignoring listen soc shutdown error
+23:43:19.947  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80f8c6e0>
+23:43:19.947  controller: INFO    : Exiting controller thread
+23:43:19.947  controller: INFO    : Ignoring switch soc shutdown error
+23:43:19.947  controller: INFO    : Ignoring listen soc shutdown error
+23:43:19.947  root      : INFO    : ** END TEST CASE conformance.MalformedHeaderType
+23:43:19.948  root      : INFO    : ** START TEST CASE conformance.MalformedHello
+23:43:19.948  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:20.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46102)
+23:43:20.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 2373020088
+23:43:20.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 810
+23:43:20.967  root      : INFO    : Connected ('127.0.0.1', 46102)
+23:43:20.967  controller: DEBUG   : Running transaction 1345807947
+23:43:20.967  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 1345807947
+23:43:20.967  controller: DEBUG   : Waiting for transaction 1345807947
+23:43:20.968  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 1345807947
+23:43:20.968  controller: DEBUG   : Matched expected XID 1345807947
+23:43:20.969  root      : INFO    : Running conformance.MalformedHello
+23:43:20.969  controller: DEBUG   : Running transaction 2520235484
+23:43:20.969  controller: DEBUG   : Msg out: version 0 class malformed_message len 8 xid 2520235484
+23:43:20.970  controller: DEBUG   : Waiting for transaction 2520235484
+23:43:20.978  controller: DEBUG   : Msg in: version 1 class bad_request_error_msg len 20 xid 2520235484
+23:43:20.979  controller: DEBUG   : Matched expected XID 2520235484
+23:43:20.979  root      : INFO    : '\x01\x01\x00\x14\x967\xbd\xdc\x00\x01\x00\x00\x00\x00\x00\x08\x967\xbd\xdc'
+23:43:20.980  root      : INFO    : 1
+23:43:20.980  controller: INFO    : Ignoring listen soc shutdown error
+23:43:20.980  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80f8c6e0>
+23:43:20.980  controller: INFO    : Exiting controller thread
+23:43:20.980  controller: INFO    : Ignoring switch soc shutdown error
+23:43:20.981  controller: INFO    : Ignoring listen soc shutdown error
+23:43:20.981  root      : INFO    : ** END TEST CASE conformance.MalformedHello
+23:43:20.982  root      : INFO    : ** START TEST CASE conformance.MalformedInstructionType
+23:43:20.982  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:21.936  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46103)
+23:43:21.936  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 3772652754
+23:43:21.937  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 811
+23:43:21.949  root      : INFO    : Connected ('127.0.0.1', 46103)
+23:43:21.949  controller: DEBUG   : Running transaction 1471120639
+23:43:21.949  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 1471120639
+23:43:21.950  controller: DEBUG   : Waiting for transaction 1471120639
+23:43:21.950  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 1471120639
+23:43:21.950  controller: DEBUG   : Matched expected XID 1471120639
+23:43:21.951  root      : INFO    : Deleting all flows
+23:43:21.951  controller: DEBUG   : Msg out: version 4 class flow_delete len 56 xid 588433701
+23:43:21.952  controller: DEBUG   : Running transaction 1557866235
+23:43:21.952  controller: DEBUG   : Msg out: version 4 class barrier_request len 8 xid 1557866235
+23:43:21.952  controller: DEBUG   : Waiting for transaction 1557866235
+23:43:21.953  controller: DEBUG   : Msg in: version 4 class barrier_reply len 8 xid 1557866235
+23:43:21.953  controller: DEBUG   : Matched expected XID 1557866235
+23:43:21.954  root      : INFO    : Inserting flow with malformed instruction type
+23:43:21.954  controller: DEBUG   : Running transaction 1671206394
+23:43:21.954  controller: DEBUG   : Msg out: version 4 class flow_add len 88 xid 1671206394
+23:43:21.955  controller: DEBUG   : Waiting for transaction 1671206394
+23:43:21.955  controller: DEBUG   : Msg in: version 4 class bad_instruction_error_msg len 76 xid 1671206394
+23:43:21.955  controller: DEBUG   : Matched expected XID 1671206394
+23:43:21.956  controller: INFO    : Ignoring listen soc shutdown error
+23:43:21.956  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80fa36e0>
+23:43:21.957  controller: INFO    : Exiting controller thread
+23:43:21.957  controller: INFO    : Ignoring switch soc shutdown error
+23:43:21.957  controller: INFO    : Ignoring listen soc shutdown error
+23:43:21.957  root      : INFO    : ** END TEST CASE conformance.MalformedInstructionType
+23:43:21.958  root      : INFO    : ** START TEST CASE conformance.MalformedTableID
+23:43:21.958  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:22.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46104)
+23:43:22.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 4028973254
+23:43:22.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 812
+23:43:22.976  root      : INFO    : Connected ('127.0.0.1', 46104)
+23:43:22.976  controller: DEBUG   : Running transaction 763965569
+23:43:22.976  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 763965569
+23:43:22.977  controller: DEBUG   : Waiting for transaction 763965569
+23:43:22.977  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 763965569
+23:43:22.977  controller: DEBUG   : Matched expected XID 763965569
+23:43:22.978  root      : INFO    : Deleting all flows
+23:43:22.978  controller: DEBUG   : Msg out: version 4 class flow_delete len 56 xid 1574459357
+23:43:22.979  controller: DEBUG   : Running transaction 668375803
+23:43:22.979  controller: DEBUG   : Msg out: version 4 class barrier_request len 8 xid 668375803
+23:43:22.980  controller: DEBUG   : Waiting for transaction 668375803
+23:43:22.980  controller: DEBUG   : Msg in: version 4 class barrier_reply len 8 xid 668375803
+23:43:22.980  controller: DEBUG   : Matched expected XID 668375803
+23:43:22.981  root      : INFO    : Inserting flow with bad table ID
+23:43:22.981  controller: DEBUG   : Running transaction 3085578704
+23:43:22.981  controller: DEBUG   : Msg out: version 4 class flow_add len 88 xid 3085578704
+23:43:22.982  controller: DEBUG   : Waiting for transaction 3085578704
+23:43:22.982  controller: DEBUG   : Msg in: version 4 class flow_mod_failed_error_msg len 76 xid 3085578704
+23:43:22.982  controller: DEBUG   : Matched expected XID 3085578704
+23:43:22.983  root      : INFO    : 5
+23:43:22.984  controller: INFO    : Ignoring listen soc shutdown error
+23:43:22.984  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80fa36e0>
+23:43:22.984  controller: INFO    : Exiting controller thread
+23:43:22.984  controller: INFO    : Ignoring switch soc shutdown error
+23:43:22.984  controller: INFO    : Ignoring listen soc shutdown error
+23:43:22.984  root      : INFO    : ** END TEST CASE conformance.MalformedTableID
+23:43:22.985  root      : INFO    : ** START TEST CASE conformance.MalformedVersion
+23:43:22.986  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:23.934  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46105)
+23:43:23.935  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 104615223
+23:43:23.935  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 813
+23:43:23.953  root      : INFO    : Connected ('127.0.0.1', 46105)
+23:43:23.953  controller: DEBUG   : Running transaction 34018038
+23:43:23.953  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 34018038
+23:43:23.954  controller: DEBUG   : Waiting for transaction 34018038
+23:43:23.954  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 34018038
+23:43:23.954  controller: DEBUG   : Matched expected XID 34018038
+23:43:23.955  root      : INFO    : Running conformance.MalformedVersion
+23:43:23.955  controller: DEBUG   : Running transaction 1244832416
+23:43:23.955  controller: DEBUG   : Msg out: version 5 class malformed_message len 8 xid 1244832416
+23:43:23.955  controller: DEBUG   : Waiting for transaction 1244832416
+23:43:23.996  controller: DEBUG   : Msg in: version 5 class bad_request_error_msg len 20 xid 1244832416
+23:43:23.997  controller: DEBUG   : Matched expected XID 1244832416
+23:43:24.020  root      : INFO    : '\x05\x01\x00\x14J2\xa2\xa0\x00\x01\x00\x00\x05\n\x00\x08J2\xa2\xa0'
+23:43:24.021  root      : INFO    : 1
+23:43:24.021  controller: INFO    : Ignoring listen soc shutdown error
+23:43:24.021  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e80fa36e0>
+23:43:24.021  controller: INFO    : Exiting controller thread
+23:43:24.022  controller: INFO    : Ignoring switch soc shutdown error
+23:43:24.022  controller: INFO    : Ignoring listen soc shutdown error
+23:43:24.022  root      : INFO    : ** END TEST CASE conformance.MalformedVersion
+23:43:24.023  root      : INFO    : ** START TEST CASE conformance.TableLoopViolation
+23:43:24.023  controller: INFO    : Create/listen at 0.0.0.0:6653
+23:43:24.935  controller: INFO    : 0.0.0.0:6653: Incoming connection from ('127.0.0.1', 46106)
+23:43:24.936  controller: DEBUG   : Msg out: version 4 class hello len 8 xid 3976294850
+23:43:24.936  controller: DEBUG   : Msg in: version 4 class hello len 8 xid 814
+23:43:24.940  root      : INFO    : Connected ('127.0.0.1', 46106)
+23:43:24.940  controller: DEBUG   : Running transaction 568608654
+23:43:24.940  controller: DEBUG   : Msg out: version 4 class features_request len 8 xid 568608654
+23:43:24.941  controller: DEBUG   : Waiting for transaction 568608654
+23:43:24.941  controller: DEBUG   : Msg in: version 4 class features_reply len 32 xid 568608654
+23:43:24.941  controller: DEBUG   : Matched expected XID 568608654
+23:43:24.942  root      : INFO    : Deleting all flows
+23:43:24.942  controller: DEBUG   : Msg out: version 4 class flow_delete len 56 xid 440044064
+23:43:24.943  controller: DEBUG   : Running transaction 2826144137
+23:43:24.943  controller: DEBUG   : Msg out: version 4 class barrier_request len 8 xid 2826144137
+23:43:24.943  controller: DEBUG   : Waiting for transaction 2826144137
+23:43:24.944  controller: DEBUG   : Msg in: version 4 class barrier_reply len 8 xid 2826144137
+23:43:24.944  controller: DEBUG   : Matched expected XID 2826144137
+23:43:24.945  root      : INFO    : Inserting flow with bad goto table instruction
+23:43:24.945  controller: DEBUG   : Running transaction 2487066494
+23:43:24.945  controller: DEBUG   : Msg out: version 4 class flow_add len 96 xid 2487066494
+23:43:24.946  controller: DEBUG   : Waiting for transaction 2487066494
+23:43:24.946  controller: DEBUG   : Msg in: version 4 class bad_instruction_error_msg len 76 xid 2487066494
+23:43:24.946  controller: DEBUG   : Matched expected XID 2487066494
+23:43:24.947  root      : INFO    : 3
+23:43:24.948  controller: INFO    : Ignoring listen soc shutdown error
+23:43:24.948  controller: ERROR   : Unknown socket ready: <socket._socketobject object at 0x7f3e806096e0>
+23:43:24.948  controller: INFO    : Exiting controller thread
+23:43:24.948  controller: INFO    : Ignoring switch soc shutdown error
+23:43:24.948  controller: INFO    : Ignoring listen soc shutdown error
+23:43:24.948  root      : INFO    : ** END TEST CASE conformance.TableLoopViolation
+23:43:24.951  root      : INFO    : *** TEST RUN END  : Wed May 13 23:43:24 2015
+23:43:24.951  dataplane : INFO    : Thread exit
