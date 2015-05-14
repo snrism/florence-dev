@@ -218,7 +218,7 @@ prefixing them with the '^' character.
         if options.openflow_version == "1.0":
             options.test_dir = os.path.join(ROOT_DIR, "tests")
         else:
-            options.test_dir = os.path.join(ROOT_DIR, "tests-1.3")
+            options.test_dir = os.path.join(ROOT_DIR, "test/switch/tests-1.3")
 
     # Convert options from a Namespace to a plain dictionary
     config = CONFIG_DEFAULT.copy()
