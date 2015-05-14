@@ -21,6 +21,7 @@ import copy
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
+# Include the oftest and loxi dependencies
 LIB_DIR = os.path.join(ROOT_DIR, 'lib')
 SRC_DIR = os.path.join(ROOT_DIR, 'src')
 if os.path.exists(os.path.join(SRC_DIR, 'florence')):
@@ -47,7 +48,7 @@ DEBUG_LEVELS = {
 }
 
 ##@var CONFIG_DEFAULT
-# The default configuration dictionary for OFT
+# The default configuration dictionary for Florence
 CONFIG_DEFAULT = {
     # Miscellaneous options
     "list"               : False,
