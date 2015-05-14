@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 """
-@package oft
+@package florence
 
-OpenFlow test framework top level script
-
-This script is the entry point for running OpenFlow tests using the OFT
-framework. For usage information, see --help or the README.
-
-To add a new command line option, edit both the CONFIG_DEFAULT dictionary and
-the config_setup function. The option's result will end up in the global
-oftest.config dictionary.
+SDN security test framework top level script
 """
 
 from __future__ import print_function
@@ -28,12 +21,14 @@ import copy
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-PY_SRC_DIR = os.path.join(ROOT_DIR, 'src', 'python')
-if os.path.exists(os.path.join(PY_SRC_DIR, 'oftest')):
+LIB_DIR = os.path.join(ROOT_DIR, 'lib')
+SRC_DIR = os.path.join(ROOT_DIR, 'src')
+if os.path.exists(os.path.join(SRC_DIR, 'florence')):
     # Running from source tree
-    sys.path.insert(0, PY_SRC_DIR)
+    sys.path.insert(0, SRC_DIR)
+    sys.path.insert(0, LIB_DIR)
 
-import oftest
+
 from oftest import config
 import oftest.ofutils
 import oftest.help_formatter

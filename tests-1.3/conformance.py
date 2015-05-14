@@ -15,7 +15,7 @@ from oftest import config
 import oftest.base_tests as base_tests
 import ofp
 
-import oftest.malformed_message as malformed_message
+import florence.malformed_message as malformed_message
 
 from oftest.testutils import *
 

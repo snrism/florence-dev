@@ -7,7 +7,6 @@
 # Do not modify
 
 import const
-import bsn_tlv
 import meter_band
 import instruction
 import oxm
