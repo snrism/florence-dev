@@ -104,21 +104,7 @@ def config_setup():
 
     usage = "usage: %prog [options] (test|group)..."
 
-    description = """\
-OFTest is a framework and set of tests for validating OpenFlow switches.
-
-The default configuration assumes that an OpenFlow 1.0 switch is attempting to
-connect to a controller on the machine running OFTest, port 6653. Additionally,
-the interfaces veth1, veth3, veth5, and veth7 should be connected to the switch's
-dataplane.
-
-If no positional arguments are given then OFTest will run all tests that
-depend only on standard OpenFlow 1.0. Otherwise each positional argument
-is interpreted as either a test name or a test group name. The union of
-these will be executed. To see what groups each test belongs to use the
---list option. Tests and groups can be subtracted from the result by
-prefixing them with the '^' character.
-"""
+    description = """Security test framework for validating SDN switches and controllers."""
 
     # Parse --interface
     def check_interface(option, opt, value):
@@ -216,10 +202,7 @@ prefixing them with the '^' character.
 
     # If --test-dir wasn't given, pick one based on the OpenFlow version
     if options.test_dir == None:
-        if options.openflow_version == "1.0":
-            options.test_dir = os.path.join(ROOT_DIR, "tests")
-        else:
-            options.test_dir = os.path.join(ROOT_DIR, "test/switch/tests-1.3")
+            options.test_dir = os.path.join(ROOT_DIR, "test")
 
     # Convert options from a Namespace to a plain dictionary
     config = CONFIG_DEFAULT.copy()
@@ -404,7 +387,7 @@ def die(msg, exit_val=1):
 oftest.config.update(new_config)
 
 logging_setup(config)
-xunit_setup(config)
+#xunit_setup(config)
 logging.info("++++++++ " + time.asctime() + " ++++++++")
 
 # Pick an OpenFlow protocol module based on the configured version
@@ -440,20 +423,7 @@ if config["list"]:
     all_groups = set()
 
     print("""
-Tests are shown grouped by module. If a test is in any groups beyond
-"standard" and its module's group then they are shown in parentheses.
-
-Tests marked with '*' are non-standard and may require vendor extensions or
-special switch configuration. These are not part of the "standard" test group.
-
-Tests marked with '!' are disabled because they are experimental,
-special-purpose, or are too long to be run normally. These are not part of
-the "standard" test group or their module's test group.
-
-Tests marked (TP1) after name take --test-params including:
-
-    'vid=N;strip_vlan=bool;add_vlan=bool'
-
+Tests are shown grouped by module.
 Test List:
 """)
     for (modname, (mod, tests)) in test_modules.items():
