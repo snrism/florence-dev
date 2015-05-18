@@ -31,7 +31,6 @@ if os.path.exists(os.path.join(SRC_DIR, 'florence')):
 
 from oftest import config
 import oftest.ofutils
-import oftest.help_formatter
 import loxi
 
 ##@var DEBUG_LEVELS
@@ -119,7 +118,7 @@ def config_setup():
     parser = optparse.OptionParser(version="%prog 0.1",
                                    usage=usage,
                                    description=description,
-                                   formatter=oftest.help_formatter.HelpFormatter(),
+                                   formatter=HelpFormatter(),
                                    option_class=Option)
 
     # Set up default values
@@ -323,6 +322,13 @@ def die(msg, exit_val=1):
     logging.critical(msg)
     sys.exit(exit_val)
 
+class HelpFormatter(optparse.IndentedHelpFormatter):
+    def format_description(self, description):
+        if description:
+            indent = " "*self.current_indent
+            return indent + description
+        else:
+            return None
 #
 # Main script
 #
