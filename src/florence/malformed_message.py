@@ -4,6 +4,7 @@ Check Malformed OpenFlow control message
 
 import struct
 import ofp
+import loxi.of13.action as action
 
 class malformed_message(object):
     #version = ofp.OFP_VERSION

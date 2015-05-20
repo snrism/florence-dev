@@ -9737,9 +9737,9 @@ message.subtypes[14] = flow_mod
 class flow_add(flow_mod):
     version = 4
     #type = 14
-    _command = 0
+    #_command = 0
 
-    def __init__(self, xid=None, cookie=None, cookie_mask=None, table_id=None, idle_timeout=None, hard_timeout=None, priority=None, buffer_id=None, out_port=None, out_group=None, flags=None, match=None, instructions=None, type=None, length=None):
+    def __init__(self, xid=None, cookie=None, cookie_mask=None, table_id=None, idle_timeout=None, hard_timeout=None, priority=None, buffer_id=None, out_port=None, out_group=None, flags=None, match=None, instructions=None, type=None, length=None, command=None):
         if xid != None:
             self.xid = xid
         else:
@@ -9796,7 +9796,11 @@ class flow_add(flow_mod):
             self.type = type
         else:
 	    self.type = 14
-        self.length = length
+        if command != None:
+	    self._command = command
+	else:
+	    self._command = 0
+	self.length = length
 	return
 
     def pack(self):
@@ -13245,7 +13249,7 @@ class packet_out(message):
         packed.append(struct.pack("!B", self.type))
         packed.append(struct.pack("!H", 0)) # placeholder for length at index 2
         packed.append(struct.pack("!L", self.xid))
-        packed.append(struct.pack("!L", self.buffer_id))
+        packed.append(struct.pack("!l", self.buffer_id))
         packed.append(util.pack_port_no(self.in_port))
         packed.append(struct.pack("!H", 0)) # placeholder for actions_len at index 6
         packed.append('\x00' * 6)

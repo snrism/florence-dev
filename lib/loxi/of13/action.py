@@ -754,9 +754,8 @@ class nicira_dec_ttl(nicira):
 nicira.subtypes[18] = nicira_dec_ttl
 
 class output(action):
-    type = 0
 
-    def __init__(self, port=None, max_len=None):
+    def __init__(self, port=None, max_len=None, type=None, length=None):
         if port != None:
             self.port = port
         else:
@@ -765,6 +764,11 @@ class output(action):
             self.max_len = max_len
         else:
             self.max_len = 0
+	if type != None:
+	    self.type = type
+	else:
+	    self.type = 0
+	self.length = length
         return
 
     def pack(self):
@@ -774,8 +778,11 @@ class output(action):
         packed.append(util.pack_port_no(self.port))
         packed.append(struct.pack("!H", self.max_len))
         packed.append('\x00' * 6)
-        length = sum([len(x) for x in packed])
-        packed[1] = struct.pack("!H", length)
+	if self.length != None:
+	    packed[1] = struct.pack("!H", self.length) 
+	else:
+            length = sum([len(x) for x in packed])
+            packed[1] = struct.pack("!H", length)
         return ''.join(packed)
 
     @staticmethod
