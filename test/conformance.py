@@ -678,3 +678,56 @@ class MalformedFlowModCommand(base_tests.SimpleDataPlane):
                         "reply error type is not bad flow mod")
         self.assertTrue(reply.code == ofp.OFPFMFC_BAD_COMMAND,
                         "reply error code is not bad flow mod command")
+
+class MalformedFlowModFlag(base_tests.SimpleDataPlane):
+    """
+    Verify wildcard match
+    """
+    def runTest(self):
+        in_port, out_port1 = openflow_ports(2)
+        match = ofp.match([
+            ofp.oxm.in_port(in_port),
+            ofp.oxm.eth_type(0x800),
+        ])
+        priority = 10
+
+        logging.info("Inserting flow with bad flow mod flag")
+        # Wrong type in flow mod
+        request = ofp.message.flow_add(
+                table_id=10,
+                match=match,
+                instructions=[
+                    ofp.instruction.apply_actions(actions=[ofp.action.output(out_port1)]),
+                ],
+                flags=100)
+        reply, pkt = self.controller.transact(request)
+
+        self.assertTrue(reply is not None, "No response to bad flow mod flag")
+        self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                        "reply not an error message")
+        logging.info(reply.err_type)
+        logging.info(reply.code)
+        self.assertTrue(reply.err_type == ofp.OFPET_FLOW_MOD_FAILED,
+                        "reply error type is not bad flow mod")
+        self.assertTrue(reply.code == ofp.OFPFMFC_BAD_FLAGS,
+                        "reply error code is not bad flow mod flag")
+
+class MalformedPortModNumber(base_tests.SimpleDataPlane):
+    """
+    Verify Port Modification Number
+    """
+    def runTest(self):
+        logging.info("Testing for bad port modification message")
+        request = ofp.message.port_mod(
+		port_no=ofp.OFPP_ANY,)
+        reply, pkt = self.controller.transact(request)
+
+        self.assertTrue(reply is not None, "No response to bad port mod")
+        self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                        "reply not an error message")
+        logging.info(reply.err_type)
+        logging.info(reply.code)
+        self.assertTrue(reply.err_type == ofp.OFPET_PORT_MOD_FAILED,
+                        "reply error type is not bad port mod")
+        self.assertTrue(reply.code == ofp.OFPPMFC_BAD_PORT,
+                        "reply error code is not bad port mod")
