@@ -12,13 +12,13 @@ import ofp
 from oftest.testutils import *
 
 
-class GroupTest(base_tests.SimpleDataPlane):
+class SetupDataPlane(base_tests.SimpleDataPlane):
     def setUp(self):
         base_tests.SimpleDataPlane.setUp(self)
         delete_all_flows(self.controller)
         delete_all_groups(self.controller)
 
-class TableIdViolation(base_tests.SimpleDataPlane):
+class TableId(base_tests.SimpleDataPlane):
     """
     Verify bad request error
     """
@@ -53,7 +53,7 @@ class TableIdViolation(base_tests.SimpleDataPlane):
         self.assertTrue(reply.code == ofp.OFPFMFC_BAD_TABLE_ID,
                         "reply error code is not bad table id")
 
-class TableLoopViolation(base_tests.SimpleDataPlane):
+class TableLoop(base_tests.SimpleDataPlane):
     """
     Verify table loop error
     """
@@ -89,7 +89,7 @@ class TableLoopViolation(base_tests.SimpleDataPlane):
         self.assertTrue(reply.code == ofp.OFPBIC_BAD_TABLE_ID,
                         "reply error code is not bad table id")
 
-class GroupIdViolation(GroupTest):
+class GroupId(SetupDataPlane):
     """
     Test cases to evaluate group ID violation
     """
@@ -99,7 +99,7 @@ class GroupIdViolation(GroupTest):
 
         msg = ofp.message.group_add(
             group_type=ofp.OFPGT_ALL,
-            group_id=ofp.OFPG_MAX+1,
+            group_id=ofp.OFPG_ANY,
             buckets=[
                 ofp.bucket(actions=[ofp.action.output(port1)])])
 	logging.info("Sending group add request")
@@ -114,7 +114,7 @@ class GroupIdViolation(GroupTest):
         self.assertTrue(reply.code == ofp.OFPGMFC_INVALID_GROUP,
                         "reply code is not invalid group")
 
-class PortRangeViolation(base_tests.SimpleDataPlane):
+class PortRange(base_tests.SimpleDataPlane):
     """
     Verify Port Range Violation
     """
@@ -133,3 +133,23 @@ class PortRangeViolation(base_tests.SimpleDataPlane):
                         "reply error type is not bad port mod")
         self.assertTrue(reply.code == ofp.OFPPMFC_BAD_PORT,
                         "reply error code is not bad port")
+
+class MeterId(base_tests.SimpleDataPlane):
+    """
+    Verify Meter ID Violation
+    """
+    def runTest(self):
+        logging.info("Testing for bad meter modification message")
+        request = ofp.message.meter_mod(
+                meter_id=ofp.OFPM_ALL,)
+        reply, pkt = self.controller.transact(request)
+
+        self.assertTrue(reply is not None, "No response to bad meter mod")
+        self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                        "reply not an error message")
+        logging.info(reply.err_type)
+        logging.info(reply.code)
+        self.assertTrue(reply.err_type == ofp.OFPET_METER_MOD_FAILED,
+                        "reply error type is not bad meter mod")
+        self.assertTrue(reply.code == ofp.OFPMMFC_INVALID_METER,
+                        "reply error code is not bad meter id")
