@@ -76,7 +76,7 @@ class Version(base_tests.SimpleProtocol):
         self.assertTrue(reply.code == ofp.OFPBRC_BAD_VERSION,
                         "reply error code is not bad type")
 
-class MessageType(base_tests.SimpleDataPlane):
+class ControlMessageType(base_tests.SimpleDataPlane):
     """
     Verify malformed control type
     """
@@ -110,7 +110,7 @@ class MessageType(base_tests.SimpleDataPlane):
         self.assertTrue(reply.code == ofp.OFPFMFC_BAD_COMMAND,
                         "reply error code is not bad timeout")
 
-class MessageLength(base_tests.SimpleDataPlane):
+class MatchLength(base_tests.SimpleDataPlane):
     """
     Verify malformed message length 
     """
@@ -143,3 +143,38 @@ class MessageLength(base_tests.SimpleDataPlane):
                         "reply error type is not bad match request")
         self.assertTrue(reply.code == ofp.OFPBMC_BAD_LEN,
                         "reply error code is not bad match length")
+
+class MatchValue(base_tests.SimpleDataPlane):
+    """
+    Verify malformed message value
+    """
+    def runTest(self):
+        in_port, out_port1 = openflow_ports(2)
+
+        delete_all_flows(self.controller)
+
+        match = ofp.match([
+            ofp.oxm.in_port(in_port),
+	    ofp.oxm.eth_type(0x800),
+	    ofp.oxm.ip_dscp(100),
+        ])
+        priority = 10
+
+        logging.info("Inserting flow with bad match value")
+        # Wrong match value in flow mod
+        request = ofp.message.flow_add(
+                table_id=10,
+                match=match,
+                instructions=[
+                    ofp.instruction.apply_actions(actions=[ofp.action.output(out_port1)]),
+                ],
+                hard_timeout=1000,)
+        reply, pkt = self.controller.transact(request)
+
+        self.assertTrue(reply is not None, "No response to bad match value")
+        self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                        "reply not an error message")
+        self.assertTrue(reply.err_type == ofp.OFPET_BAD_MATCH,
+                        "reply error type is not bad match request")
+        self.assertTrue(reply.code == ofp.OFPBMC_BAD_VALUE,
+                        "reply error code is not bad match value")
