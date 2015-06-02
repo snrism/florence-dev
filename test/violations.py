@@ -163,27 +163,35 @@ class RolePermissions(base_tests.SimpleDataPlane):
 	role, gen = role_setup.role_request(self, ofp.OFPCR_ROLE_NOCHANGE)
         role_setup.role_request(self, ofp.OFPCR_ROLE_SLAVE, gen)
 
+	# Generate requests not allowed in Slave Controller Role
+	# Packet Out
         self.controller.message_send(
             ofp.message.packet_out(buffer_id=ofp.OFP_NO_BUFFER))
-
+	
+	# Flow Modification
         self.controller.message_send(
             ofp.message.flow_delete(
                 buffer_id=ofp.OFP_NO_BUFFER,
                 out_port=ofp.OFPP_ANY,
                 out_group=ofp.OFPG_ANY))
 
+	# Group Modification
         self.controller.message_send(
             ofp.message.group_mod(
                 command=ofp.OFPGC_DELETE,
                 group_id=ofp.OFPG_ALL))
 
+	# Port Modification
         self.controller.message_send(
             ofp.message.port_mod(
                 port_no=ofp.OFPP_MAX))
 
+	# Table Modification
 	self.controller.message_send(
             ofp.message.table_mod(
                 table_id=1))
+
+	# Since Table Features is unsupported in OF1.3, we skip it
 
         do_barrier(self.controller)
 
