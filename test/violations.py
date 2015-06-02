@@ -10,7 +10,7 @@ from oftest import config
 import oftest.base_tests as base_tests
 import ofp
 from oftest.testutils import *
-
+import florence.controller_role_setup as role_setup
 
 class SetupDataPlane(base_tests.SimpleDataPlane):
     def setUp(self):
@@ -153,3 +153,46 @@ class MeterId(base_tests.SimpleDataPlane):
                         "reply error type is not bad meter mod")
         self.assertTrue(reply.code == ofp.OFPMMFC_INVALID_METER,
                         "reply error code is not bad meter id")
+
+class RolePermissions(base_tests.SimpleDataPlane):
+    """
+    Check for role permission errors when a slave connection modifies switch state
+    """
+    def runTest(self):
+
+	role, gen = role_setup.role_request(self, ofp.OFPCR_ROLE_NOCHANGE)
+        role_setup.role_request(self, ofp.OFPCR_ROLE_SLAVE, gen)
+
+        self.controller.message_send(
+            ofp.message.packet_out(buffer_id=ofp.OFP_NO_BUFFER))
+
+        self.controller.message_send(
+            ofp.message.flow_delete(
+                buffer_id=ofp.OFP_NO_BUFFER,
+                out_port=ofp.OFPP_ANY,
+                out_group=ofp.OFPG_ANY))
+
+        self.controller.message_send(
+            ofp.message.group_mod(
+                command=ofp.OFPGC_DELETE,
+                group_id=ofp.OFPG_ALL))
+
+        self.controller.message_send(
+            ofp.message.port_mod(
+                port_no=ofp.OFPP_MAX))
+
+	self.controller.message_send(
+            ofp.message.table_mod(
+                table_id=1))
+
+        do_barrier(self.controller)
+
+        err_count = 0
+        while self.controller.packets:
+            msg = self.controller.packets.pop(0)[0]
+            if msg.type == ofp.OFPT_ERROR:
+                self.assertEquals(msg.err_type, ofp.OFPET_BAD_REQUEST)
+                self.assertEquals(msg.code, ofp.OFPBRC_EPERM)
+                err_count += 1
+
+        self.assertEquals(err_count, 5, "Expected errors for each message")
