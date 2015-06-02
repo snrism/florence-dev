@@ -13249,7 +13249,7 @@ class packet_out(message):
         packed.append(struct.pack("!B", self.type))
         packed.append(struct.pack("!H", 0)) # placeholder for length at index 2
         packed.append(struct.pack("!L", self.xid))
-        packed.append(struct.pack("!l", self.buffer_id))
+        packed.append(struct.pack("!L", self.buffer_id))
         packed.append(util.pack_port_no(self.in_port))
         packed.append(struct.pack("!H", 0)) # placeholder for actions_len at index 6
         packed.append('\x00' * 6)

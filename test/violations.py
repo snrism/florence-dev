@@ -10,7 +10,7 @@ from oftest import config
 import oftest.base_tests as base_tests
 import ofp
 from oftest.testutils import *
-
+import florence.controller_role_setup as role_setup
 
 class SetupDataPlane(base_tests.SimpleDataPlane):
     def setUp(self):
@@ -153,3 +153,66 @@ class MeterId(base_tests.SimpleDataPlane):
                         "reply error type is not bad meter mod")
         self.assertTrue(reply.code == ofp.OFPMMFC_INVALID_METER,
                         "reply error code is not bad meter id")
+
+class RolePermissions(base_tests.SimpleDataPlane):
+    """
+    Check for role permission errors when a slave connection modifies switch state
+    """
+    def runTest(self):
+
+	role, gen = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
+        role_setup.request(self, ofp.OFPCR_ROLE_SLAVE, gen)
+
+	# Generate requests not allowed in Slave Controller Role
+	# Packet Out
+        self.controller.message_send(
+            ofp.message.packet_out(buffer_id=ofp.OFP_NO_BUFFER))
+	
+	# Flow Modification
+        self.controller.message_send(
+            ofp.message.flow_delete(
+                buffer_id=ofp.OFP_NO_BUFFER,
+                out_port=ofp.OFPP_ANY,
+                out_group=ofp.OFPG_ANY))
+
+	# Group Modification
+        self.controller.message_send(
+            ofp.message.group_mod(
+                command=ofp.OFPGC_DELETE,
+                group_id=ofp.OFPG_ALL))
+
+	# Port Modification
+        self.controller.message_send(
+            ofp.message.port_mod(
+                port_no=ofp.OFPP_MAX))
+
+	# Table Modification
+	self.controller.message_send(
+            ofp.message.table_mod(
+                table_id=1))
+
+	# Since Table Features is unsupported in OF1.3, we skip it
+
+        do_barrier(self.controller)
+
+        err_count = 0
+        while self.controller.packets:
+            msg = self.controller.packets.pop(0)[0]
+            if msg.type == ofp.OFPT_ERROR:
+                self.assertEquals(msg.err_type, ofp.OFPET_BAD_REQUEST)
+                self.assertEquals(msg.code, ofp.OFPBRC_EPERM)
+                err_count += 1
+
+        self.assertEquals(err_count, 5, "Expected errors for each message")
+
+
+class GenerationID(base_tests.SimpleDataPlane):
+    """
+    Stale generation ID should be rejected
+    """
+    def runTest(self):
+	role, gen = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
+	role_setup.error(self, ofp.OFPCR_ROLE_MASTER, gen-1, ofp.OFPRRFC_STALE)
+
+	role1, gen1 = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
+        role_setup.error(self, ofp.OFPCR_ROLE_SLAVE, gen1-1, ofp.OFPRRFC_STALE)
