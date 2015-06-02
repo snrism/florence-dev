@@ -1,5 +1,5 @@
 """
-Controller role setup helper functions
+Controller role setup helper functions from OFTest
 """
 import struct
 import unittest
@@ -16,7 +16,7 @@ from oftest.testutils import *
 def add_mod64(a, b):
     return (a + b) & (2**64-1)
 
-def role_request(test, role, gen=None, con=None):
+def request(test, role, gen=None, con=None):
     """
     Send a role request we expect to succeed
     """
@@ -31,9 +31,9 @@ def role_request(test, role, gen=None, con=None):
         test.assertEquals(response.generation_id, gen)
     return response.role, response.generation_id
 
-def failed_role_request(test, role, gen, code, con=None):
+def error(test, role, gen, code, con=None):
     """
-    Send a role request we expect to fail
+    Send a bad role request
     """
     if con == None:
         con = test.controller

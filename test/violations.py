@@ -160,8 +160,8 @@ class RolePermissions(base_tests.SimpleDataPlane):
     """
     def runTest(self):
 
-	role, gen = role_setup.role_request(self, ofp.OFPCR_ROLE_NOCHANGE)
-        role_setup.role_request(self, ofp.OFPCR_ROLE_SLAVE, gen)
+	role, gen = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
+        role_setup.request(self, ofp.OFPCR_ROLE_SLAVE, gen)
 
 	# Generate requests not allowed in Slave Controller Role
 	# Packet Out
@@ -204,3 +204,15 @@ class RolePermissions(base_tests.SimpleDataPlane):
                 err_count += 1
 
         self.assertEquals(err_count, 5, "Expected errors for each message")
+
+
+class GenerationID(base_tests.SimpleDataPlane):
+    """
+    Stale generation ID should be rejected
+    """
+    def runTest(self):
+	role, gen = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
+	role_setup.error(self, ofp.OFPCR_ROLE_MASTER, gen-1, ofp.OFPRRFC_STALE)
+
+	role1, gen1 = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
+        role_setup.error(self, ofp.OFPCR_ROLE_SLAVE, gen1-1, ofp.OFPRRFC_STALE)
