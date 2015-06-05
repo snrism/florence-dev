@@ -7,7 +7,6 @@ SDN security test framework top level script
 from __future__ import print_function
 
 import sys
-import optparse
 import logging
 import unittest
 import time
