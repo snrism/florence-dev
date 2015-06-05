@@ -106,7 +106,6 @@ def config_setup():
     parser = optparse.OptionParser(version="%prog 0.1",
                                    usage=usage,
                                    description=description,
-                                   formatter=HelpFormatter(),
                                    option_class=Option)
 
     # Set up default values
@@ -308,12 +307,4 @@ def prune_tests(test_specs, test_modules, version):
 def die(msg, exit_val=1):
     logging.critical(msg)
     sys.exit(exit_val)
-
-class HelpFormatter(optparse.IndentedHelpFormatter):
-    def format_description(self, description):
-        if description:
-            indent = " "*self.current_indent
-            return indent + description
-        else:
-            return None
 
