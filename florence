@@ -52,9 +52,6 @@ import oftest.testutils
 sys.path.append(config["test_dir"])
 
 test_specs = args
-if config["test_spec"] != "":
-    logging.warning("The '--test-spec' option is deprecated.")
-    test_specs += config["test_spec"].split(',')
 if config["test_file"] != None:
     with open(config["test_file"], 'r') as f:
         for line in f:
