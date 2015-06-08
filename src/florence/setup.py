@@ -52,7 +52,7 @@ CONFIG_DEFAULT = {
     "switch_ip"          : None,  # If not none, actively connect to switch
     "platform"           : "eth",
     "platform_args"      : None,
-    "platform_dir"       : "platforms", #os.path.join(ROOT_DIR, "platforms"),
+    "platform_dir"       : "platforms",
     "interfaces"         : [],
     "openflow_version"   : "1.3",
 
@@ -78,7 +78,7 @@ CONFIG_DEFAULT = {
     "port_map"           : {},
 }
 
-def config_setup():
+def florence_arg_setup():
     """
     Set up the configuration including parsing the arguments
     @return A pair (config, args) where config is an config
@@ -155,9 +155,10 @@ def config_setup():
     group.add_argument("--random-order", action="store_true",
                       help="Randomize order of tests")
 
+    parser.add_argument('posargs', nargs='*')
     # Might need this if other parsers want command line
     args = parser.parse_args()
-
+    
     # If --test-dir wasn't given, pick one based on the OpenFlow version
     if args.test_dir == None:
         args.test_dir = os.path.join(ROOT_DIR, "test")
@@ -167,7 +168,7 @@ def config_setup():
     for key in config.keys():
         config[key] = getattr(args, key)
 
-    return config 
+    return (config, args.posargs) 
 
 def logging_setup(config):
     """

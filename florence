@@ -33,7 +33,7 @@ import loxi
 import florence.setup as setup
 
 # Setup global configuration
-new_config = setup.config_setup()
+(new_config, args) = setup.florence_arg_setup()
 oftest.config.update(new_config)
 
 setup.logging_setup(config)
@@ -50,7 +50,7 @@ import oftest.testutils
 # Allow tests to import each other
 sys.path.append(config["test_dir"])
 
-test_specs = []
+test_specs = args 
 if config["test_file"] != None:
     with open(config["test_file"], 'r') as f:
         for line in f:
