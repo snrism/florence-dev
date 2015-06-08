@@ -102,17 +102,19 @@ def florence_arg_setup():
 
     # Set up default values
     parser.set_defaults(**CONFIG_DEFAULT)
-    parser.add_argument('--version', action='version', version='%prog 0.1')
+    parser.add_argument('-V', '--version', action='version', version='%prog 0.1')
     parser.add_argument("--list", action="store_true",
                       help="List all tests and exit")
     parser.add_argument("--list-test-names", action='store_true',
                       help="List test names matching the test spec and exit")
 
+    # Test options
     group = parser.add_argument_group("Test selection options")
     group.add_argument("-T", "--test-spec", "--test-list", help="Tests to run, separated by commas")
     group.add_argument("-f", "--test-file", help="File of tests to run, one per line")
     group.add_argument("--test-dir", help="Directory containing tests")
 
+    # Switch and Controller options
     group = parser.add_argument_group("Switch connection options")
     group.add_argument("-H", "--host", dest="controller_host",
                       help="IP address to listen on (default %default)")
@@ -123,6 +125,7 @@ def florence_arg_setup():
     group.add_argument("--interface", "-i", type=check_interface, metavar="INTERFACE", action="append",
                      help="Specify a OpenFlow port number and the dataplane interface to use. May be given multiple times. Example: 1@eth1")
 
+    # Logging options
     group = parser.add_argument_group("Logging options")
     group.add_argument("--log-file", help="Name of log file (default %default)")
     group.add_argument("--log-dir", help="Name of log directory")
@@ -133,9 +136,12 @@ def florence_arg_setup():
                      const="verbose", help="Shortcut for --debug=verbose")
     group.add_argument("-q", "--quiet", action="store_const", dest="debug",
                      const="warning", help="Shortcut for --debug=warning")
+
+    # xunit options
     group.add_argument("--xunit", action="store_true", help="Enable xUnit-formatted results")
     group.add_argument("--xunit-dir", help="Output directory for xUnit-formatted results")
 
+    # Optional test specific options
     group = parser.add_argument_group("Test behavior options")
     group.add_argument("--relax", action="store_true",
                       help="Relax packet match checks allowing other packets")
@@ -155,11 +161,13 @@ def florence_arg_setup():
     group.add_argument("--random-order", action="store_true",
                       help="Randomize order of tests")
 
+    # Process positional arguments
     parser.add_argument('posargs', nargs='*')
-    # Might need this if other parsers want command line
+
     args = parser.parse_args()
     
     # If --test-dir wasn't given, pick one based on the OpenFlow version
+    # Currently florence supports OpenFlow 1.3
     if args.test_dir == None:
         args.test_dir = os.path.join(ROOT_DIR, "test")
 
