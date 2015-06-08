@@ -302,7 +302,6 @@ def process_list_args(test_modules):
 
     print("""
 Tests are shown grouped by module.
-Test List:
 """)
     for (modname, (mod, tests)) in test_modules.items():
         mod_count += 1
