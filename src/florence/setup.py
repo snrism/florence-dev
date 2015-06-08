@@ -7,7 +7,7 @@ SDN security test framework top level script
 from __future__ import print_function
 
 import sys
-import optparse
+import argparse
 import logging
 import unittest
 import time
@@ -52,7 +52,7 @@ CONFIG_DEFAULT = {
     "switch_ip"          : None,  # If not none, actively connect to switch
     "platform"           : "eth",
     "platform_args"      : None,
-    "platform_dir"       : "platforms", #os.path.join(ROOT_DIR, "platforms"),
+    "platform_dir"       : "platforms",
     "interfaces"         : [],
     "openflow_version"   : "1.3",
 
@@ -78,15 +78,13 @@ CONFIG_DEFAULT = {
     "port_map"           : {},
 }
 
-def config_setup():
+def florence_arg_setup():
     """
     Set up the configuration including parsing the arguments
     @return A pair (config, args) where config is an config
     object and args is any additional arguments from the command line
     """
-
-    usage = "usage: %prog [options] (test|group)..."
-
+    usage = "usage: %(prog)s [options] (test|group)..."
     description = """Security test framework for validating SDN switches and controllers."""
 
     # Parse --interface
@@ -95,93 +93,88 @@ def config_setup():
             ofport, interface = value.split('@', 1)
             ofport = int(ofport)
         except ValueError:
-            raise optparse.OptionValueError("incorrect interface syntax (got %s, expected 'ofport@interface')" % repr(value))
+            raise argparse.ArgumentError("incorrect interface syntax (got %s, expected 'ofport@interface')" % repr(value))
         return (ofport, interface)
 
-    class Option(optparse.Option):
-        TYPES = optparse.Option.TYPES + ("interface",)
-        TYPE_CHECKER = copy.copy(optparse.Option.TYPE_CHECKER)
-        TYPE_CHECKER["interface"] = check_interface
-
-    parser = optparse.OptionParser(version="%prog 0.1",
-                                   usage=usage,
-                                   description=description,
-                                   option_class=Option)
+    parser = argparse.ArgumentParser(usage=usage, description=description)
 
     # Set up default values
     parser.set_defaults(**CONFIG_DEFAULT)
-
-    parser.add_option("--list", action="store_true",
+    parser.add_argument('-V', '--version', action='version', version='%(prog)s 0.1')
+    parser.add_argument("--list", action="store_true",
                       help="List all tests and exit")
-    parser.add_option("--list-test-names", action='store_true',
+    parser.add_argument("--list-test-names", action='store_true',
                       help="List test names matching the test spec and exit")
 
-    group = optparse.OptionGroup(parser, "Test selection options")
-    group.add_option("-T", "--test-spec", "--test-list", help="Tests to run, separated by commas")
-    group.add_option("-f", "--test-file", help="File of tests to run, one per line")
-    group.add_option("--test-dir", type="string", help="Directory containing tests")
-    parser.add_option_group(group)
+    # Test options
+    group = parser.add_argument_group("Test selection options")
+    group.add_argument("-T", "--test-spec", "--test-list", help="Tests to run, separated by commas")
+    group.add_argument("-f", "--test-file", help="File of tests to run, one per line")
+    group.add_argument("--test-dir", help="Directory containing tests")
 
-    group = optparse.OptionGroup(parser, "Switch connection options")
-    group.add_option("-H", "--host", dest="controller_host",
-                      help="IP address to listen on (default %default)")
-    group.add_option("-p", "--port", dest="controller_port",
-                      type="int", help="Port number to listen on (default %default)")
-    group.add_option("-S", "--switch-ip", dest="switch_ip",
+    # Switch and Controller options
+    group = parser.add_argument_group("Switch connection options")
+    group.add_argument("-H", "--host", dest="controller_host",
+                      help="IP address to listen on (default %%default)")
+    group.add_argument("-p", "--port", dest="controller_port",
+                      type=int, help="Port number to listen on (default %%default)")
+    group.add_argument("-S", "--switch-ip", dest="switch_ip",
                       help="If set, actively connect to this switch by IP")
-    group.add_option("--interface", "-i", type="interface", dest="interfaces", metavar="INTERFACE", action="append",
+    group.add_argument("--interface", "-i", type=check_interface, metavar="INTERFACE", action="append",
                      help="Specify a OpenFlow port number and the dataplane interface to use. May be given multiple times. Example: 1@eth1")
-    parser.add_option_group(group)
 
-    group = optparse.OptionGroup(parser, "Logging options")
-    group.add_option("--log-file", help="Name of log file (default %default)")
-    group.add_option("--log-dir", help="Name of log directory")
+    # Logging options
+    group = parser.add_argument_group("Logging options")
+    group.add_argument("--log-file", help="Name of log file (default %%default)")
+    group.add_argument("--log-dir", help="Name of log directory")
     dbg_lvl_names = sorted(DEBUG_LEVELS.keys(), key=lambda x: DEBUG_LEVELS[x])
-    group.add_option("--debug", choices=dbg_lvl_names,
-                      help="Debug lvl: debug, info, warning, error, critical (default %default)")
-    group.add_option("-v", "--verbose", action="store_const", dest="debug",
+    group.add_argument("--debug", choices=dbg_lvl_names,
+                      help="Debug lvl: debug, info, warning, error, critical (default %%default)")
+    group.add_argument("-v", "--verbose", action="store_const", dest="debug",
                      const="verbose", help="Shortcut for --debug=verbose")
-    group.add_option("-q", "--quiet", action="store_const", dest="debug",
+    group.add_argument("-q", "--quiet", action="store_const", dest="debug",
                      const="warning", help="Shortcut for --debug=warning")
-    group.add_option("--xunit", action="store_true", help="Enable xUnit-formatted results")
-    group.add_option("--xunit-dir", help="Output directory for xUnit-formatted results")
-    parser.add_option_group(group)
 
-    group = optparse.OptionGroup(parser, "Test behavior options")
-    group.add_option("--relax", action="store_true",
+    # xunit options
+    group.add_argument("--xunit", action="store_true", help="Enable xUnit-formatted results")
+    group.add_argument("--xunit-dir", help="Output directory for xUnit-formatted results")
+
+    # Optional test specific options
+    group = parser.add_argument_group("Test behavior options")
+    group.add_argument("--relax", action="store_true",
                       help="Relax packet match checks allowing other packets")
     test_params_help = """Set test parameters: key=val;... (see --list)
     """
-    group.add_option("-t", "--test-params", help=test_params_help)
-    group.add_option("--fail-skipped", action="store_true",
+    group.add_argument("-t", "--test-params", help=test_params_help)
+    group.add_argument("--fail-skipped", action="store_true",
                       help="Return failure if any test was skipped")
-    group.add_option("--default-timeout", type=float,
+    group.add_argument("--default-timeout", type=float,
                       help="Timeout in seconds for most operations")
-    group.add_option("--minsize", type="int",
+    group.add_argument("--minsize", type=int,
                       help="Minimum allowable packet size on the dataplane.")
-    group.add_option("--random-seed", type="int",
+    group.add_argument("--random-seed", type=int,
                       help="Random number generator seed")
-    group.add_option("--disable-ipv6", action="store_true",
+    group.add_argument("--disable-ipv6", action="store_true",
                       help="Disable IPv6 tests")
-    group.add_option("--random-order", action="store_true",
+    group.add_argument("--random-order", action="store_true",
                       help="Randomize order of tests")
-    parser.add_option_group(group)
 
-    # Might need this if other parsers want command line
-    # parser.allow_interspersed_args = False
-    (options, args) = parser.parse_args()
+    # Process positional arguments
+    parser.add_argument('posargs', nargs='*')
 
+    args = parser.parse_args()
+    
     # If --test-dir wasn't given, pick one based on the OpenFlow version
-    if options.test_dir == None:
-            options.test_dir = os.path.join(ROOT_DIR, "test")
-	    print(options.test_dir + " Test Directory")
+    # Currently florence supports OpenFlow 1.3
+    if args.test_dir == None:
+        args.test_dir = os.path.join(ROOT_DIR, "test")
 
     # Convert options from a Namespace to a plain dictionary
     config = CONFIG_DEFAULT.copy()
     for key in config.keys():
-        config[key] = getattr(options, key)
+        config[key] = getattr(args, key)
 
-    return (config, args)
+    return (config, args.posargs) 
 
 def logging_setup(config):
     """
