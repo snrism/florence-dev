@@ -16,6 +16,7 @@ import random
 import signal
 import fnmatch
 import copy
+
 # Set the required path variables for Florence
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 LIB_DIR = os.path.join(ROOT_DIR, 'lib')
@@ -24,6 +25,7 @@ if os.path.exists(os.path.join(SRC_DIR, 'florence')):
     # Running from source tree
     sys.path.insert(0, SRC_DIR)
     sys.path.insert(0, LIB_DIR)
+
 from oftest import config
 import oftest.ofutils
 import loxi
@@ -32,28 +34,32 @@ import florence.setup as setup
 # Setup global configuration
 (new_config, args) = setup.florence_arg_setup()
 oftest.config.update(new_config)
-
 setup.logging_setup(config)
 setup.xunit_setup(config)
-
-#TODO Pick an OpenFlow protocol module based on the configured version
-name_to_version = dict((v,k) for k, v in loxi.version_names.iteritems())
-sys.modules["ofp"] = loxi.protocol(name_to_version[config["openflow_version"]])
 
 if os.getuid() != 0 and not config["allow_user"]:
     setup.die("Super-user privileges required. Please re-run with sudo or as root.")
     sys.exit(1)
 
-import oftest.testutils
+# Generate the test suite
+suite = unittest.TestSuite()
 
+#TODO Pick an OpenFlow protocol module based on the configured version
+name_to_version = dict((v,k) for k, v in loxi.version_names.iteritems())
+sys.modules["ofp"] = loxi.protocol(name_to_version[config["openflow_version"]])
+
+# HACK: testutils.py imports controller.py, which needs the ofp module
+import oftest.testutils
 # Allow tests to import each other
 sys.path.append(config["test_dir"])
 
+# Handle optional positional arguments
 test_specs = args 
 if test_specs == []:
     test_specs = ["standard"]
 
 test_modules = setup.load_test_modules(config)
+
 # Check if test list is requested; display and exit if so
 if config["list"]:
     setup.process_list_args(test_modules)
@@ -64,9 +70,7 @@ test_modules = setup.prune_tests(test_specs, test_modules, config["openflow_vers
 if config["list_test_names"]:
     setup.process_list_test_names_args(test_modules)
 
-# Generate the test suite
-suite = unittest.TestSuite()
-
+# Sort test cases
 sorted_tests = setup.sort_tests(test_modules)
 if config["random_order"]:
     random.shuffle(sorted_tests)
