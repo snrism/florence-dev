@@ -295,7 +295,60 @@ def prune_tests(test_specs, test_modules, version):
 
     return result
 
+def process_list_args(test_modules):
+    mod_count = 0
+    test_count = 0
+    all_groups = set()
+
+    print("""
+Tests are shown grouped by module.
+Test List:
+""")
+    for (modname, (mod, tests)) in test_modules.items():
+        mod_count += 1
+        desc = (mod.__doc__ or "No description").strip().split('\n')[0]
+        print("  Module %13s: %s" % (mod.__name__, desc))
+
+        for (testname, test) in tests.items():
+            desc = (test.__doc__ or "No description").strip().split('\n')[0]
+
+            groups = set(test._groups) - set(["all", "standard", modname])
+            all_groups.update(test._groups)
+            if groups:
+                desc = "(%s) %s" % (",".join(groups), desc)
+            if hasattr(test, "_versions"):
+                desc = "(%s) %s" % (",".join(sorted(test._versions)), desc)
+
+            start_str = " %s%s %s:" % (test._nonstandard and "*" or " ",
+                                       test._disabled and "!" or " ",
+                                       testname)
+            print("  %22s : %s" % (start_str, desc))
+            test_count += 1
+        print
+    print("'%d' modules shown with a total of '%d' tests\n" %
+          (mod_count, test_count))
+    print("Test groups: %s" % (', '.join(sorted(all_groups))))
+
+    sys.exit(0)
+
+def process_list_test_names_args(test_modules):
+    for (modname, (mod, tests)) in test_modules.items():
+        for (testname, test) in tests.items():
+            print("%s.%s" % (modname, testname))
+
+    sys.exit(0)
+
+def sort_tests(test_modules):
+    sorted_tests = []
+    for (modname, (mod, tests)) in sorted(test_modules.items()):
+        for (testname, test) in sorted(tests.items()):
+            sorted_tests.append(test)
+    return sorted_tests
+
 def die(msg, exit_val=1):
     logging.critical(msg)
     sys.exit(exit_val)
+
+
+
 
