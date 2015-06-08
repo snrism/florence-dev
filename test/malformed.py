@@ -13,7 +13,6 @@ import florence.malformed_message as malformed_message
 
 from oftest.testutils import *
 
-@group('smoke')
 class Hello(base_tests.SimpleProtocol):
     """
     Send a handshake request with the version not supported by the switch
@@ -34,7 +33,6 @@ class Hello(base_tests.SimpleProtocol):
         self.assertTrue(reply.code == ofp.OFPET_HELLO_FAILED,
                         "reply error code is not bad type")
 
-@group('smoke')
 class HeaderType(base_tests.SimpleProtocol):
     """
     Send a message with a bad type and verify an error is returned
@@ -55,7 +53,6 @@ class HeaderType(base_tests.SimpleProtocol):
         self.assertTrue(reply.code == ofp.OFPBRC_BAD_TYPE,
                         "reply error code is not bad type")
 
-@group('smoke')
 class Version(base_tests.SimpleProtocol):
     """
     Send a message with a bad version and verify an error is returned

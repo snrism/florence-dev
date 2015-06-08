@@ -84,7 +84,7 @@ def florence_arg_setup():
     @return A pair (config, args) where config is an config
     object and args is any additional arguments from the command line
     """
-    usage = "usage: %(prog)s [options] (test|group)..."
+    usage = "%(prog)s [options] (test|group)..."
     description = """Security test framework for validating SDN switches and controllers."""
 
     # Parse --interface
