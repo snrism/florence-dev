@@ -84,9 +84,7 @@ def florence_arg_setup():
     @return A pair (config, args) where config is an config
     object and args is any additional arguments from the command line
     """
-
-    usage = "usage: %prog [options] (test|group)..."
-
+    usage = "usage: %(prog)s [options] (test|group)..."
     description = """Security test framework for validating SDN switches and controllers."""
 
     # Parse --interface
@@ -102,7 +100,7 @@ def florence_arg_setup():
 
     # Set up default values
     parser.set_defaults(**CONFIG_DEFAULT)
-    parser.add_argument('-V', '--version', action='version', version='%prog 0.1')
+    parser.add_argument('-V', '--version', action='version', version='%(prog)s 0.1')
     parser.add_argument("--list", action="store_true",
                       help="List all tests and exit")
     parser.add_argument("--list-test-names", action='store_true',
@@ -117,9 +115,9 @@ def florence_arg_setup():
     # Switch and Controller options
     group = parser.add_argument_group("Switch connection options")
     group.add_argument("-H", "--host", dest="controller_host",
-                      help="IP address to listen on (default %default)")
+                      help="IP address to listen on (default %%default)")
     group.add_argument("-p", "--port", dest="controller_port",
-                      type=int, help="Port number to listen on (default %default)")
+                      type=int, help="Port number to listen on (default %%default)")
     group.add_argument("-S", "--switch-ip", dest="switch_ip",
                       help="If set, actively connect to this switch by IP")
     group.add_argument("--interface", "-i", type=check_interface, metavar="INTERFACE", action="append",
@@ -127,11 +125,11 @@ def florence_arg_setup():
 
     # Logging options
     group = parser.add_argument_group("Logging options")
-    group.add_argument("--log-file", help="Name of log file (default %default)")
+    group.add_argument("--log-file", help="Name of log file (default %%default)")
     group.add_argument("--log-dir", help="Name of log directory")
     dbg_lvl_names = sorted(DEBUG_LEVELS.keys(), key=lambda x: DEBUG_LEVELS[x])
     group.add_argument("--debug", choices=dbg_lvl_names,
-                      help="Debug lvl: debug, info, warning, error, critical (default %default)")
+                      help="Debug lvl: debug, info, warning, error, critical (default %%default)")
     group.add_argument("-v", "--verbose", action="store_const", dest="debug",
                      const="verbose", help="Shortcut for --debug=verbose")
     group.add_argument("-q", "--quiet", action="store_const", dest="debug",
