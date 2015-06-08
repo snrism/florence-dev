@@ -175,3 +175,22 @@ class MatchValue(base_tests.SimpleDataPlane):
                         "reply error type is not bad match request")
         self.assertTrue(reply.code == ofp.OFPBMC_BAD_VALUE,
                         "reply error code is not bad match value")
+
+class IncompatibleHello(base_tests.SimpleProtocol):
+    """
+    Send an incompatible hello error message after connection establishment to monitor switch behavior
+    """
+
+    def runTest(self):
+        logging.info("Running " + str(self))
+        request = ofp.message.hello_failed_error_msg(code=0)
+        reply, pkt = self.controller.transact(request)
+	self.assertTrue(reply is not None, "No response to incompatible hello")
+        self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                        "reply not an error message")
+        logging.info(reply.err_type)
+	logging.info(reply.code)
+        self.assertTrue(reply.err_type == ofp.OFPET_HELLO_FAILED,
+                        "reply error type is not hello failed")
+        self.assertTrue(reply.code == ofp.OFPHFC_INCOMPATIBLE,
+                        "reply error code is not hello incompatible")
