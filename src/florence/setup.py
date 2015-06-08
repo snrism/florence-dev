@@ -108,8 +108,6 @@ def florence_arg_setup():
 
     # Test options
     group = parser.add_argument_group("Test selection options")
-    group.add_argument("-T", "--test-spec", "--test-list", help="Tests to run, separated by commas")
-    group.add_argument("-f", "--test-file", help="File of tests to run, one per line")
     group.add_argument("--test-dir", help="Directory containing tests")
 
     # Switch and Controller options

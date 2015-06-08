@@ -51,13 +51,6 @@ import oftest.testutils
 sys.path.append(config["test_dir"])
 
 test_specs = args 
-if config["test_file"] != None:
-    with open(config["test_file"], 'r') as f:
-        for line in f:
-            line, _, _ = line.partition('#') # remove comments
-            line = line.strip()
-            if line:
-                test_specs.append(line)
 if test_specs == []:
     test_specs = ["standard"]
 
