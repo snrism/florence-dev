@@ -169,7 +169,7 @@ def florence_arg_setup():
 
     return (config, args.posargs) 
 
-def logging_setup(config):
+def logging_setup():
     """
     Set up logging based on config
     """
@@ -187,7 +187,7 @@ def logging_setup(config):
 
     open_logfile('main')
 
-def xunit_setup(config):
+def xunit_setup():
     """
     Set up xUnit output based on config
     """
@@ -200,7 +200,7 @@ def xunit_setup(config):
         shutil.rmtree(config["xunit_dir"])
     os.makedirs(config["xunit_dir"])
 
-def load_test_modules(config):
+def load_test_modules():
     """
     Load tests from the test directory.
     Also updates the _groups member to include "standard" and

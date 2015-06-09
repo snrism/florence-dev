@@ -34,9 +34,8 @@ import florence.setup as setup
 # Setup global configuration
 (new_config, args) = setup.florence_arg_setup()
 config.update(new_config)
-print(config)
-setup.logging_setup(config)
-setup.xunit_setup(config)
+setup.logging_setup()
+setup.xunit_setup()
 
 if os.getuid() != 0 and not config["allow_user"]:
     setup.die("Super-user privileges required. Please re-run with sudo or as root.")
@@ -59,7 +58,7 @@ test_specs = args
 if test_specs == []:
     test_specs = ["standard"]
 
-test_modules = setup.load_test_modules(config)
+test_modules = setup.load_test_modules()
 
 # Check if test list is requested; display and exit if so
 if config["list"]:
