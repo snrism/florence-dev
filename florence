@@ -26,16 +26,16 @@ if os.path.exists(os.path.join(SRC_DIR, 'florence')):
     sys.path.insert(0, SRC_DIR)
     sys.path.insert(0, LIB_DIR)
 
-from oftest import config
 import oftest.ofutils
 import loxi
+from florence import config
 import florence.setup as setup
 
 # Setup global configuration
 (new_config, args) = setup.florence_arg_setup()
-oftest.config.update(new_config)
-setup.logging_setup(config)
-setup.xunit_setup(config)
+config.update(new_config)
+setup.logging_setup()
+setup.xunit_setup()
 
 if os.getuid() != 0 and not config["allow_user"]:
     setup.die("Super-user privileges required. Please re-run with sudo or as root.")
@@ -58,7 +58,7 @@ test_specs = args
 if test_specs == []:
     test_specs = ["standard"]
 
-test_modules = setup.load_test_modules(config)
+test_modules = setup.load_test_modules()
 
 # Check if test list is requested; display and exit if so
 if config["list"]:
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         result = runner.run(suite)
     else:
         result = unittest.TextTestRunner(verbosity=2).run(suite)
-    oftest.open_logfile('main')
+    setup.open_logfile('main')
     if oftest.testutils.skipped_test_count > 0:
         message = "Skipped %d test(s)" % oftest.testutils.skipped_test_count
         logging.info(message)

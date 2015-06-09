@@ -3,9 +3,6 @@
 @package florence
 SDN security test framework top level script
 """
-
-from __future__ import print_function
-
 import sys
 import argparse
 import logging
@@ -17,66 +14,9 @@ import random
 import signal
 import fnmatch
 import copy
-
-from oftest import config
+from florence import config, DEBUG_LEVELS, CONFIG_DEFAULT
 import oftest.ofutils
-import loxi
 
-##@var DEBUG_LEVELS
-# Map from strings to debugging levels
-DEBUG_LEVELS = {
-    'debug'              : logging.DEBUG,
-    'verbose'            : logging.DEBUG,
-    'info'               : logging.INFO,
-    'warning'            : logging.WARNING,
-    'warn'               : logging.WARNING,
-    'error'              : logging.ERROR,
-    'critical'           : logging.CRITICAL
-}
-
-##@var CONFIG_DEFAULT
-# The default configuration dictionary for Florence
-CONFIG_DEFAULT = {
-    # Miscellaneous options
-    "list"               : False,
-    "list_test_names"    : False,
-
-    # Test selection options
-    "test_spec"          : "",
-    "test_file"          : None,
-    "test_dir"           : "test",
-
-    # Switch connection options
-    "controller_host"    : "0.0.0.0",  # For passive bind
-    "controller_port"    : 6653,
-    "switch_ip"          : None,  # If not none, actively connect to switch
-    "platform"           : "eth",
-    "platform_args"      : None,
-    "platform_dir"       : "platforms",
-    "interfaces"         : [],
-    "openflow_version"   : "1.3",
-
-    # Logging options
-    "log_file"           : "florence.log",
-    "log_dir"            : None,
-    "debug"              : "verbose",
-    "xunit"              : False,
-    "xunit_dir"          : "xunit",
-
-    # Test behavior options
-    "relax"              : False,
-    "test_params"        : "None",
-    "fail_skipped"       : False,
-    "default_timeout"    : 2.0,
-    "default_negative_timeout" : 0.01,
-    "minsize"            : 0,
-    "random_seed"        : None,
-    "disable_ipv6"       : False,
-    "random_order"       : False,
-
-    # Other configuration
-    "port_map"           : {},
-}
 
 def florence_arg_setup():
     """
@@ -174,7 +114,7 @@ def florence_arg_setup():
 
     return (config, args.posargs) 
 
-def logging_setup(config):
+def logging_setup():
     """
     Set up logging based on config
     """
@@ -190,9 +130,9 @@ def logging_setup(config):
         if os.path.exists(config["log_file"]):
             os.remove(config["log_file"])
 
-    oftest.open_logfile('main')
+    open_logfile('main')
 
-def xunit_setup(config):
+def xunit_setup():
     """
     Set up xUnit output based on config
     """
@@ -205,7 +145,7 @@ def xunit_setup(config):
         shutil.rmtree(config["xunit_dir"])
     os.makedirs(config["xunit_dir"])
 
-def load_test_modules(config):
+def load_test_modules():
     """
     Load tests from the test directory.
     Also updates the _groups member to include "standard" and
@@ -343,6 +283,34 @@ def sort_tests(test_modules):
         for (testname, test) in sorted(tests.items()):
             sorted_tests.append(test)
     return sorted_tests
+
+def open_logfile(name):
+    """
+    (Re)open logfile
+
+    When using a log directory a new logfile is created for each test. The same
+    code is used to implement a single logfile in the absence of --log-dir.
+    """
+
+    _format = "%(asctime)s.%(msecs)03d  %(name)-10s: %(levelname)-8s: %(message)s"
+    _datefmt = "%H:%M:%S"
+
+    if config["log_dir"] != None:
+        filename = os.path.join(config["log_dir"], name) + ".log"
+    else:
+        filename = config["log_file"]
+
+    logger = logging.getLogger()
+
+    # Remove any existing handlers
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
+        handler.close()
+
+    # Add a new handler
+    handler = logging.FileHandler(filename, mode='a')
+    handler.setFormatter(logging.Formatter(_format, _datefmt))
+    logger.addHandler(handler)
 
 def die(msg, exit_val=1):
     logging.critical(msg)

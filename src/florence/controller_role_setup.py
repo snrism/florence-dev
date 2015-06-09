@@ -6,7 +6,7 @@ import unittest
 import logging
 
 import oftest
-from oftest import config
+from florence import config
 import oftest.controller as controller
 import ofp
 import oftest.base_tests as base_tests

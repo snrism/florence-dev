@@ -12,6 +12,7 @@ import oftest.dataplane
 import oftest.parse
 import oftest.ofutils
 import ofp
+import florence
 
 global skipped_test_count
 skipped_test_count = 0
@@ -1164,7 +1165,7 @@ def skip_message_emit(parent, s):
 
     skipped_test_count += 1
     logging.info("Skipping: " + s)
-    if oftest.config["debug"] < logging.WARNING:
+    if florence.config["debug"] < logging.WARNING:
         sys.stderr.write("(skipped) ")
     else:
         sys.stderr.write("(S)")
@@ -1628,7 +1629,7 @@ def openflow_ports(num=None):
     of the result to 'num' and raise an exception if not enough ports are
     available.
     """
-    ports = sorted(oftest.config["port_map"].keys())
+    ports = sorted(florence.config["port_map"].keys())
     if num != None and len(ports) < num:
         raise Exception("test requires %d ports but only %d are available" % (num, len(ports)))
     return ports[:num]
