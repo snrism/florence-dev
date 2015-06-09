@@ -4,7 +4,7 @@
 """
 Wrap scapy to satisfy pylint
 """
-from oftest import config
+from florence import config
 import sys
 
 try:

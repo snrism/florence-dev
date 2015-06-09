@@ -10,7 +10,8 @@ import unittest
 import os
 
 import oftest
-from oftest import config
+import florence
+from florence import config
 import oftest.controller as controller
 import oftest.dataplane as dataplane
 import ofp
@@ -20,7 +21,7 @@ class BaseTest(unittest.TestCase):
         return self.id().replace('.runTest', '')
 
     def setUp(self):
-        oftest.open_logfile(str(self))
+        florence.setup.open_logfile(str(self))
         logging.info("** START TEST CASE " + str(self))
 
     def tearDown(self):

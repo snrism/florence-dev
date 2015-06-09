@@ -6,7 +6,7 @@ Test cases in other modules depend on this functionality.
 
 import logging
 
-from oftest import config
+from florence import config
 import oftest.base_tests as base_tests
 import ofp
 from oftest.testutils import *

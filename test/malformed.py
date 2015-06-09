@@ -5,7 +5,7 @@ Malformed control message test cases
 
 import logging
 
-from oftest import config
+from florence import config
 import oftest.base_tests as base_tests
 import ofp
 

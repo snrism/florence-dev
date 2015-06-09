@@ -1,0 +1,2 @@
+# Global config dictionary
+config = {}

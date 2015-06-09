@@ -11,7 +11,7 @@ import os
 import logging
 import time
 
-from oftest import config
+from florence import config
 
 # Requires the libvpi and pyvpi packages
 from vpi import vpi

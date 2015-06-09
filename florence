@@ -26,14 +26,15 @@ if os.path.exists(os.path.join(SRC_DIR, 'florence')):
     sys.path.insert(0, SRC_DIR)
     sys.path.insert(0, LIB_DIR)
 
-from oftest import config
 import oftest.ofutils
 import loxi
+from florence import config
 import florence.setup as setup
 
 # Setup global configuration
 (new_config, args) = setup.florence_arg_setup()
-oftest.config.update(new_config)
+config.update(new_config)
+print(config)
 setup.logging_setup(config)
 setup.xunit_setup(config)
 
@@ -139,7 +140,7 @@ if __name__ == "__main__":
         result = runner.run(suite)
     else:
         result = unittest.TextTestRunner(verbosity=2).run(suite)
-    oftest.open_logfile('main')
+    setup.open_logfile('main')
     if oftest.testutils.skipped_test_count > 0:
         message = "Skipped %d test(s)" % oftest.testutils.skipped_test_count
         logging.info(message)
