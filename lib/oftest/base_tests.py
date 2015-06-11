@@ -15,6 +15,7 @@ from florence import config
 import oftest.controller as controller
 import oftest.dataplane as dataplane
 import ofp
+from oftest.testutils import *
 
 class BaseTest(unittest.TestCase):
     def __str__(self):
@@ -140,3 +141,42 @@ class DataPlaneOnly(BaseTest):
         if config["log_dir"] != None:
             self.dataplane.stop_pcap()
         BaseTest.tearDown(self)
+
+class Handshake(BaseTest):
+    """
+    Base handshake case to set up controller, but do not send hello.
+    """
+
+    def controllerSetup(self, host, port):
+        con = controller.Controller(host=host,port=port)
+
+        # clean_shutdown should be set to False to force quit app
+        self.clean_shutdown = True
+        # disable initial hello so hello is under control of test
+        con.initial_hello = False
+
+        con.start()
+        self.controllers.append(con)
+
+    def setUp(self):
+        logging.info("** START TEST CASE " + str(self))
+
+        self.controllers = []
+        self.default_timeout = test_param_get('default_timeout',
+                                              default=2)
+
+    def tearDown(self):
+        logging.info("** END TEST CASE " + str(self))
+        for con in self.controllers:
+            con.shutdown()
+            if self.clean_shutdown:
+                con.join()
+
+    def runTest(self):
+        # do nothing in the base case
+        pass
+
+    def assertTrue(self, cond, msg):
+        if not cond:
+            logging.error("** FAILED ASSERTION: " + msg)
+        unittest.TestCase.assertTrue(self, cond, msg)

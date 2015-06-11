@@ -7,10 +7,10 @@ Test cases in other modules depend on this functionality.
 import logging
 
 from florence import config
+import florence.controller_role_setup as role_setup
 import oftest.base_tests as base_tests
 import ofp
 from oftest.testutils import *
-import florence.controller_role_setup as role_setup
 
 class SetupDataPlane(base_tests.SimpleDataPlane):
     def setUp(self):
@@ -20,7 +20,7 @@ class SetupDataPlane(base_tests.SimpleDataPlane):
 
 class TableId(base_tests.SimpleDataPlane):
     """
-    Verify bad request error
+    Verify bad Table ID request error
     """
     def runTest(self):
         in_port, out_port1 = openflow_ports(2)
@@ -216,3 +216,31 @@ class GenerationID(base_tests.SimpleDataPlane):
 
 	role1, gen1 = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
         role_setup.error(self, ofp.OFPCR_ROLE_SLAVE, gen1-1, ofp.OFPRRFC_STALE)
+
+class HandshakeWithoutHello(base_tests.Handshake):
+    """
+    Connect to switch without OpenFlow hello message,
+    and wait for disconnect.
+    """
+    def runTest(self):
+        self.controllerSetup(config["controller_host"],
+                             config["controller_port"])
+        self.controllers[0].connect(self.default_timeout)
+        # wait for controller to die
+        self.assertTrue(self.controllers[0].wait_disconnected(timeout=10),
+                        "Not notified of controller disconnect")
+
+class ControlMsgBeforeHello(base_tests.Handshake):
+    """
+    Establish connection and send Flow Modification before Feature Request.
+    """
+    def runTest(self):
+        self.controllerSetup(config["controller_host"],
+                             config["controller_port"])
+        self.controllers[0].connect(self.default_timeout)
+
+        logging.info("Connected to switch" + 
+                     str(self.controllers[0].switch_addr))
+ 
+        reply, pkt = self.controllers[0].transact(ofp.message.barrier_request(), self.default_timeout)
+	self.assertTrue(reply is None, "Got response to control message before Hello")
