@@ -13,7 +13,7 @@ import florence.malformed_message as malformed_message
 
 from oftest.testutils import *
 
-class Hello(base_tests.SimpleProtocol):
+class UnsupportedVersion(base_tests.SimpleProtocol):
     """
     Send a handshake request with the version not supported by the switch
     """
@@ -24,7 +24,7 @@ class Hello(base_tests.SimpleProtocol):
 
         reply, pkt = self.controller.transact(request)
         logging.info(repr(pkt))
-        self.assertTrue(reply is not None, "No response to malformed hello")
+        self.assertTrue(reply is not None, "No response to unsupported hello")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
         logging.info(reply.err_type)
@@ -33,7 +33,7 @@ class Hello(base_tests.SimpleProtocol):
         self.assertTrue(reply.code == ofp.OFPET_HELLO_FAILED,
                         "reply error code is not bad type")
 
-class HeaderType(base_tests.SimpleProtocol):
+class UnsupportedMessageType(base_tests.SimpleProtocol):
     """
     Send a message with a bad type and verify an error is returned
     """

@@ -5,12 +5,13 @@ Test cases in other modules depend on this functionality.
 """
 
 import logging
-
+import oftest.controller as controller
 from florence import config
 import florence.controller_role_setup as role_setup
 import oftest.base_tests as base_tests
 import ofp
 from oftest.testutils import *
+
 
 class SetupDataPlane(base_tests.SimpleDataPlane):
     def setUp(self):
@@ -232,7 +233,7 @@ class HandshakeWithoutHello(base_tests.Handshake):
 
 class ControlMsgBeforeHello(base_tests.Handshake):
     """
-    Establish connection and send Flow Modification before Feature Request.
+    Establish connection and send contol message before hellow.
     """
     def runTest(self):
         self.controllerSetup(config["controller_host"],
