@@ -106,10 +106,10 @@ def florence_arg_setup():
 
     args = parser.parse_args()
 
-    # If --test-dir wasn't given, pick one based on the OpenFlow version
+    # TODO If --test-dir wasn't given, pick one based on the OpenFlow version
     # Currently florence supports OpenFlow 1.3
-    if args.test_dir is None:
-        args.test_dir = os.path.join(ROOT_DIR, "test")
+    # if args.test_dir is None:
+    #    args.test_dir = os.path.join(ROOT_DIR, "test")
 
     # Convert options from a Namespace to a plain dictionary
     config = CONFIG_DEFAULT.copy()
