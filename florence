@@ -14,8 +14,6 @@ import os
 import imp
 import random
 import signal
-import fnmatch
-import copy
 
 # Set the required path variables for Florence
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -31,6 +29,9 @@ import loxi
 from florence import config
 import florence.setup as setup
 
+# Generate the test suite
+suite = unittest.TestSuite()
+
 # Setup global configuration
 (new_config, args) = setup.florence_arg_setup()
 config.update(new_config)
@@ -38,14 +39,11 @@ setup.logging_setup()
 setup.xunit_setup()
 
 if os.getuid() != 0 and not config["allow_user"]:
-    setup.die("Super-user privileges required. Please re-run with sudo or as root.")
+    setup.die("Super-user privileges required. Re-run with sudo or as root.")
     sys.exit(1)
 
-# Generate the test suite
-suite = unittest.TestSuite()
-
-#TODO Pick an OpenFlow protocol module based on the configured version
-name_to_version = dict((v,k) for k, v in loxi.version_names.iteritems())
+# TODO Pick an OpenFlow protocol module based on the configured version
+name_to_version = dict((v, k) for k, v in loxi.version_names.iteritems())
 sys.modules["ofp"] = loxi.protocol(name_to_version[config["openflow_version"]])
 
 # HACK: testutils.py imports controller.py, which needs the ofp module
@@ -54,17 +52,17 @@ import oftest.testutils
 sys.path.append(config["test_dir"])
 
 # Handle optional positional arguments
-test_specs = args 
+test_specs = args
 if test_specs == []:
     test_specs = ["standard"]
 
 test_modules = setup.load_test_modules()
+of_version = config["openflow_version"]
+test_modules = setup.prune_tests(test_specs, test_modules, of_version)
 
 # Check if test list is requested; display and exit if so
 if config["list"]:
     setup.process_list_args(test_modules)
-
-test_modules = setup.prune_tests(test_specs, test_modules, config["openflow_version"])
 
 # Check if test list is requested; display and exit if so
 if config["list_test_names"]:
