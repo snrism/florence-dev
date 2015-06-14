@@ -20,11 +20,9 @@ class UnsupportedVersion(base_tests.SimpleProtocol):
         request = malformed_message.malformed_message(version=0, type=0)
 
         reply, pkt = self.controller.transact(request)
-        logging.info(repr(pkt))
         self.assertTrue(reply is not None, "No response to unsupported hello")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
         self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
                         "reply error type is not bad request")
         self.assertTrue(reply.code == ofp.OFPET_HELLO_FAILED,
@@ -41,12 +39,10 @@ class UnsupportedMessageType(base_tests.SimpleProtocol):
         request = malformed_message.malformed_message(version=4, type=97)
 
         reply, pkt = self.controller.transact(request)
-        logging.info(repr(pkt))
         self.assertTrue(reply is not None,
                         "No response to malformed message type")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
         self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
                         "reply error type is not bad request")
         self.assertTrue(reply.code == ofp.OFPBRC_BAD_TYPE,
@@ -63,12 +59,10 @@ class Version(base_tests.SimpleProtocol):
         request = malformed_message.malformed_message(version=5, type=10)
 
         reply, pkt = self.controller.transact(request)
-        logging.info(repr(pkt))
         self.assertTrue(reply is not None,
                         "No response to malformed message version")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
         self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
                         "reply error type is not bad request")
         self.assertTrue(reply.code == ofp.OFPBRC_BAD_VERSION,
@@ -183,8 +177,6 @@ class IncompatibleHello(base_tests.SimpleProtocol):
         self.assertTrue(reply is not None, "No response to incompatible hello")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
-        logging.info(reply.code)
         self.assertTrue(reply.err_type == ofp.OFPET_HELLO_FAILED,
                         "reply error type is not hello failed")
         self.assertTrue(reply.code == ofp.OFPHFC_INCOMPATIBLE,

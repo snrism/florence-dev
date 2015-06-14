@@ -32,7 +32,6 @@ class TableId(base_tests.SimpleDataPlane):
             ofp.oxm.in_port(in_port),
         ])
         priority = 10
-
         logging.info("Inserting flow with bad table ID")
         inst = ofp.instruction.apply_actions([ofp.action.output(out_port1)])
         request = ofp.message.flow_add(table_id=255,
@@ -43,10 +42,10 @@ class TableId(base_tests.SimpleDataPlane):
                                        flags=ofp.OFPFF_SEND_FLOW_REM)
         reply, pkt = self.controller.transact(request)
 
-        self.assertTrue(reply is not None, "No response to malformed table ID")
+        self.assertTrue(reply is not None,
+                        "No response to malformed table ID")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
         self.assertTrue(reply.err_type == ofp.OFPET_FLOW_MOD_FAILED,
                         "reply error type is not flow mod failed")
         self.assertTrue(reply.code == ofp.OFPFMFC_BAD_TABLE_ID,
@@ -77,10 +76,10 @@ class TableLoop(base_tests.SimpleDataPlane):
                                        flags=ofp.OFPFF_SEND_FLOW_REM)
         reply, pkt = self.controller.transact(request)
 
-        self.assertTrue(reply is not None, "No response to table loop error")
+        self.assertTrue(reply is not None,
+                        "No response to table loop error")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
         self.assertTrue(reply.err_type == ofp.OFPET_BAD_INSTRUCTION,
                         "reply error type is not bad request")
         self.assertTrue(reply.code == ofp.OFPBIC_BAD_TABLE_ID,
@@ -102,11 +101,10 @@ class GroupId(SetupDataPlane):
                 ofp.bucket(actions=[ofp.action.output(port1)])])
         logging.info("Sending group add request")
         reply, pkt = self.controller.transact(msg)
-        self.assertTrue(reply is not None, "No response to group add request")
+        self.assertTrue(reply is not None,
+                        "No response to group add request")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
-        logging.info(reply.code)
         self.assertTrue(reply.err_type == ofp.OFPET_GROUP_MOD_FAILED,
                         "reply error type is not bad group mod request")
         self.assertTrue(reply.code == ofp.OFPGMFC_INVALID_GROUP,
@@ -121,12 +119,10 @@ class PortRange(base_tests.SimpleDataPlane):
         logging.info("Testing for bad port modification message")
         request = ofp.message.port_mod(port_no=ofp.OFPP_ANY,)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None, "No response to bad port mod")
+        self.assertTrue(reply is not None,
+                        "No response to bad port mod")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
-        logging.info(reply.code)
         self.assertTrue(reply.err_type == ofp.OFPET_PORT_MOD_FAILED,
                         "reply error type is not bad port mod")
         self.assertTrue(reply.code == ofp.OFPPMFC_BAD_PORT,
@@ -141,12 +137,10 @@ class MeterId(base_tests.SimpleDataPlane):
         logging.info("Testing for bad meter modification message")
         request = ofp.message.meter_mod(meter_id=ofp.OFPM_ALL,)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None, "No response to bad meter mod")
+        self.assertTrue(reply is not None,
+                        "No response to bad meter mod")
         self.assertTrue(reply.type == ofp.OFPT_ERROR,
                         "reply not an error message")
-        logging.info(reply.err_type)
-        logging.info(reply.code)
         self.assertTrue(reply.err_type == ofp.OFPET_METER_MOD_FAILED,
                         "reply error type is not bad meter mod")
         self.assertTrue(reply.code == ofp.OFPMMFC_INVALID_METER,
