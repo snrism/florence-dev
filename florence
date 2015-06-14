@@ -31,6 +31,9 @@ import loxi
 from florence import config
 import florence.setup as setup
 
+# Generate the test suite
+suite = unittest.TestSuite()
+
 # Setup global configuration
 (new_config, args) = setup.florence_arg_setup()
 config.update(new_config)
@@ -40,9 +43,6 @@ setup.xunit_setup()
 if os.getuid() != 0 and not config["allow_user"]:
     setup.die("Super-user privileges required. Please re-run with sudo or as root.")
     sys.exit(1)
-
-# Generate the test suite
-suite = unittest.TestSuite()
 
 #TODO Pick an OpenFlow protocol module based on the configured version
 name_to_version = dict((v,k) for k, v in loxi.version_names.iteritems())
@@ -59,12 +59,11 @@ if test_specs == []:
     test_specs = ["standard"]
 
 test_modules = setup.load_test_modules()
+test_modules = setup.prune_tests(test_specs, test_modules, config["openflow_version"])
 
 # Check if test list is requested; display and exit if so
 if config["list"]:
     setup.process_list_args(test_modules)
-
-test_modules = setup.prune_tests(test_specs, test_modules, config["openflow_version"])
 
 # Check if test list is requested; display and exit if so
 if config["list_test_names"]:
