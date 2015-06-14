@@ -7,15 +7,10 @@ import sys
 import argparse
 import logging
 import unittest
-import time
 import os
 import imp
-import random
-import signal
 import fnmatch
-import copy
 from florence import config, DEBUG_LEVELS, CONFIG_DEFAULT
-import oftest.ofutils
 
 
 def florence_arg_setup():
@@ -25,7 +20,7 @@ def florence_arg_setup():
     object and args is any additional arguments from the command line
     """
     usage = "%(prog)s [options] (test|group)..."
-    description = """Security test framework for validating SDN switches and controllers."""
+    description = """Security framework to validate SDN switch & controller"""
 
     # Parse --interface
     def check_interface(option, opt, value):
@@ -33,18 +28,21 @@ def florence_arg_setup():
             ofport, interface = value.split('@', 1)
             ofport = int(ofport)
         except ValueError:
-            raise argparse.ArgumentError("incorrect interface syntax (got %s, expected 'ofport@interface')" % repr(value))
+            raise argparse.ArgumentError("incorrect interface syntax (got"
+                                         "%s, expected 'ofport@interface')"
+                                         % repr(value))
         return (ofport, interface)
 
     parser = argparse.ArgumentParser(usage=usage, description=description)
 
     # Set up default values
     parser.set_defaults(**CONFIG_DEFAULT)
-    parser.add_argument('-V', '--version', action='version', version='%(prog)s 0.1')
+    parser.add_argument('-V', '--version', action='version',
+                        version='%(prog)s 0.1')
     parser.add_argument("--list", action="store_true",
-                      help="List all tests and exit")
+                        help="List all tests and exit")
     parser.add_argument("--list-test-names", action='store_true',
-                      help="List test names matching the test spec and exit")
+                        help="List test names matching the test spec and exit")
 
     # Test options
     group = parser.add_argument_group("Test selection options")
@@ -53,66 +51,73 @@ def florence_arg_setup():
     # Switch and Controller options
     group = parser.add_argument_group("Switch connection options")
     group.add_argument("-H", "--host", dest="controller_host",
-                      help="IP address to listen on (default %%default)")
+                       help="IP address to listen on (default %%default)")
+    help_text = "Port number to listen on (default %%default)"
     group.add_argument("-p", "--port", dest="controller_port",
-                      type=int, help="Port number to listen on (default %%default)")
+                       type=int, help=help_text)
     group.add_argument("-S", "--switch-ip", dest="switch_ip",
-                      help="If set, actively connect to this switch by IP")
-    group.add_argument("--interface", "-i", type=check_interface, metavar="INTERFACE", action="append",
-                     help="Specify a OpenFlow port number and the dataplane interface to use. May be given multiple times. Example: 1@eth1")
+                       help="If set, actively connect to this switch by IP")
+    help_text = "Specify one (or more) OpenFlow port and" \
+                "the dataplane interface Example: 1@eth1"
+    group.add_argument("--interface", "-i", type=check_interface,
+                       metavar="INTERFACE", action="append",
+                       help=help_text)
 
     # Logging options
     group = parser.add_argument_group("Logging options")
-    group.add_argument("--log-file", help="Name of log file (default %%default)")
+    group.add_argument("--log-file", help="Log file name (default %%default)")
     group.add_argument("--log-dir", help="Name of log directory")
     dbg_lvl_names = sorted(DEBUG_LEVELS.keys(), key=lambda x: DEBUG_LEVELS[x])
-    group.add_argument("--debug", choices=dbg_lvl_names,
-                      help="Debug lvl: debug, info, warning, error, critical (default %%default)")
+    help_text = "debug, info, warning, error, critical (default %%default)"
+    group.add_argument("--debug", choices=dbg_lvl_names, help=help_text)
     group.add_argument("-v", "--verbose", action="store_const", dest="debug",
-                     const="verbose", help="Shortcut for --debug=verbose")
+                       const="verbose", help="Shortcut for --debug=verbose")
     group.add_argument("-q", "--quiet", action="store_const", dest="debug",
-                     const="warning", help="Shortcut for --debug=warning")
+                       const="warning", help="Shortcut for --debug=warning")
 
     # xunit options
-    group.add_argument("--xunit", action="store_true", help="Enable xUnit-formatted results")
-    group.add_argument("--xunit-dir", help="Output directory for xUnit-formatted results")
+    help_text = "Enable xUnit-formatted results"
+    group.add_argument("--xunit", action="store_true", help=help_text)
+    help_text = "Output directory for xUnit-formatted results"
+    group.add_argument("--xunit-dir", help=help_text)
 
     # Optional test specific options
     group = parser.add_argument_group("Test behavior options")
     group.add_argument("--relax", action="store_true",
-                      help="Relax packet match checks allowing other packets")
+                       help="Relax packet match checks allowing other packets")
     test_params_help = """Set test parameters: key=val;... (see --list)
     """
     group.add_argument("-t", "--test-params", help=test_params_help)
     group.add_argument("--fail-skipped", action="store_true",
-                      help="Return failure if any test was skipped")
+                       help="Return failure if any test was skipped")
     group.add_argument("--default-timeout", type=float,
-                      help="Timeout in seconds for most operations")
+                       help="Timeout in seconds for most operations")
     group.add_argument("--minsize", type=int,
-                      help="Minimum allowable packet size on the dataplane.")
+                       help="Minimum allowable packet size on the dataplane.")
     group.add_argument("--random-seed", type=int,
-                      help="Random number generator seed")
+                       help="Random number generator seed")
     group.add_argument("--disable-ipv6", action="store_true",
-                      help="Disable IPv6 tests")
+                       help="Disable IPv6 tests")
     group.add_argument("--random-order", action="store_true",
-                      help="Randomize order of tests")
+                       help="Randomize order of tests")
 
     # Process positional arguments
     parser.add_argument('posargs', nargs='*')
 
     args = parser.parse_args()
-    
-    # If --test-dir wasn't given, pick one based on the OpenFlow version
+
+    # TODO If --test-dir wasn't given, pick one based on the OpenFlow version
     # Currently florence supports OpenFlow 1.3
-    if args.test_dir == None:
-        args.test_dir = os.path.join(ROOT_DIR, "test")
+    # if args.test_dir is None:
+    #    args.test_dir = os.path.join(ROOT_DIR, "test")
 
     # Convert options from a Namespace to a plain dictionary
     config = CONFIG_DEFAULT.copy()
     for key in config.keys():
         config[key] = getattr(args, key)
 
-    return (config, args.posargs) 
+    return (config, args.posargs)
+
 
 def logging_setup():
     """
@@ -121,7 +126,7 @@ def logging_setup():
 
     logging.getLogger().setLevel(DEBUG_LEVELS[config["debug"]])
 
-    if config["log_dir"] != None:
+    if config["log_dir"] is not None:
         if os.path.exists(config["log_dir"]):
             import shutil
             shutil.rmtree(config["log_dir"])
@@ -131,6 +136,7 @@ def logging_setup():
             os.remove(config["log_file"])
 
     open_logfile('main')
+
 
 def xunit_setup():
     """
@@ -144,6 +150,7 @@ def xunit_setup():
         import shutil
         shutil.rmtree(config["xunit_dir"])
     os.makedirs(config["xunit_dir"])
+
 
 def load_test_modules():
     """
@@ -166,15 +173,17 @@ def load_test_modules():
                 if sys.modules.has_key(modname):
                     mod = sys.modules[modname]
                 else:
-                    mod = imp.load_module(modname, *imp.find_module(modname, [root]))
+                    mod = imp.load_module(modname, *imp.find_module(modname,
+                                                                    [root]))
             except:
                 logging.warning("Could not import file " + filename)
                 raise
 
             # Find all testcases defined in the module
-            tests = dict((k, v) for (k, v) in mod.__dict__.items() if type(v) == type and
-                                                                      issubclass(v, unittest.TestCase) and
-                                                                      hasattr(v, "runTest"))
+            tests = (dict((k, v) for (k, v) in mod.__dict__.items()
+                     if type(v) == type and
+                     issubclass(v, unittest.TestCase) and
+                     hasattr(v, "runTest")))
             if tests:
                 for (testname, test) in tests.items():
                     # Set default annotation values
@@ -192,11 +201,12 @@ def load_test_modules():
                     # Put test in the standard test group
                     if not test._disabled and not test._nonstandard:
                         test._groups.append("standard")
-                        test._groups.append("all") # backwards compatibility
+                        test._groups.append("all")  # backwards compatibility
 
                 result[modname] = (mod, tests)
 
     return result
+
 
 def prune_tests(test_specs, test_modules, version):
     """
@@ -221,10 +231,12 @@ def prune_tests(test_specs, test_modules, version):
                 if e in test._groups or e == "%s.%s" % (modname, testname):
                     result.setdefault(modname, (mod, {}))
                     if not negated:
-                        if not hasattr(test, "_versions") or version in test._versions:
+                        if (not hasattr(test, "_versions") or
+                           version in test._versions):
                             result[modname][1][testname] = test
                     else:
-                        if modname in result and testname in result[modname][1]:
+                        if (modname in result and
+                           testname in result[modname][1]):
                             del result[modname][1][testname]
                             if not result[modname][1]:
                                 del result[modname]
@@ -234,6 +246,7 @@ def prune_tests(test_specs, test_modules, version):
             die("test-spec element %s did not match any tests" % e)
 
     return result
+
 
 def process_list_args(test_modules):
     mod_count = 0
@@ -270,6 +283,7 @@ Tests are shown grouped by module.
 
     sys.exit(0)
 
+
 def process_list_test_names_args(test_modules):
     for (modname, (mod, tests)) in test_modules.items():
         for (testname, test) in tests.items():
@@ -277,12 +291,14 @@ def process_list_test_names_args(test_modules):
 
     sys.exit(0)
 
+
 def sort_tests(test_modules):
     sorted_tests = []
     for (modname, (mod, tests)) in sorted(test_modules.items()):
         for (testname, test) in sorted(tests.items()):
             sorted_tests.append(test)
     return sorted_tests
+
 
 def open_logfile(name):
     """
@@ -292,10 +308,11 @@ def open_logfile(name):
     code is used to implement a single logfile in the absence of --log-dir.
     """
 
-    _format = "%(asctime)s.%(msecs)03d  %(name)-10s: %(levelname)-8s: %(message)s"
+    _format = "%(asctime)s.%(msecs)03d  %(name)-10s: %(levelname)-8s: \
+              %(message)s"
     _datefmt = "%H:%M:%S"
 
-    if config["log_dir"] != None:
+    if config["log_dir"] is not None:
         filename = os.path.join(config["log_dir"], name) + ".log"
     else:
         filename = config["log_file"]
@@ -312,10 +329,7 @@ def open_logfile(name):
     handler.setFormatter(logging.Formatter(_format, _datefmt))
     logger.addHandler(handler)
 
+
 def die(msg, exit_val=1):
     logging.critical(msg)
     sys.exit(exit_val)
-
-
-
-
