@@ -8,7 +8,7 @@ from florence import config
 import oftest.base_tests as base_tests
 import ofp
 import florence.malformed_message as malformed_message
-from oftest.testutils import *
+import oftest.testutils as testutils
 
 
 class UnsupportedVersion(base_tests.SimpleProtocol):
@@ -75,9 +75,9 @@ class ControlMessageType(base_tests.SimpleDataPlane):
     Verify malformed control type
     """
     def runTest(self):
-        in_port, out_port1 = openflow_ports(2)
+        in_port, out_port1 = testutils.openflow_ports(2)
 
-        delete_all_flows(self.controller)
+        testutils.delete_all_flows(self.controller)
 
         match = ofp.match([
             ofp.oxm.in_port(in_port),
@@ -107,9 +107,9 @@ class MatchLength(base_tests.SimpleDataPlane):
     Verify malformed message length
     """
     def runTest(self):
-        in_port, out_port1 = openflow_ports(2)
+        in_port, out_port1 = testutils.openflow_ports(2)
 
-        delete_all_flows(self.controller)
+        testutils.delete_all_flows(self.controller)
 
         match = ofp.match([
             ofp.oxm.in_port(in_port),
@@ -139,9 +139,9 @@ class MatchValue(base_tests.SimpleDataPlane):
     Verify malformed message value
     """
     def runTest(self):
-        in_port, out_port1 = openflow_ports(2)
+        in_port, out_port1 = testutils.openflow_ports(2)
 
-        delete_all_flows(self.controller)
+        testutils.delete_all_flows(self.controller)
 
         match = ofp.match([ofp.oxm.in_port(in_port),
                           ofp.oxm.eth_type(0x800),
@@ -183,8 +183,9 @@ class IncompatibleHello(base_tests.Handshake):
         request = ofp.message.hello_failed_error_msg(code=0)
         reply, pkt = self.controllers[0].transact(request,
                                                   self.default_timeout)
-        self.assertTrue(reply is None, """Response received for incompatible """  
-                        """hello. Requested not rejected or connection not closed""")
+        self.assertTrue(reply is None,
+                        """Response received for incompatible hello. """
+                        """Requested not rejected or connection not closed""")
 
 
 class CookieValue(base_tests.SimpleDataPlane):
@@ -193,7 +194,7 @@ class CookieValue(base_tests.SimpleDataPlane):
     Checking with a reserved value which is expected to fail.
     """
     def runTest(self):
-        in_port, out_port1 = openflow_ports(2)
+        in_port, out_port1 = testutils.openflow_ports(2)
         match = ofp.match([
             ofp.oxm.in_port(in_port),
         ])
@@ -222,7 +223,7 @@ class BufferID(base_tests.SimpleDataPlane):
     Verify flow modification fails with bad buffer_id value
     """
     def runTest(self):
-        in_port, out_port1 = openflow_ports(2)
+        in_port, out_port1 = testutils.openflow_ports(2)
         match = ofp.match([
             ofp.oxm.in_port(in_port),
         ])
@@ -241,5 +242,5 @@ class BufferID(base_tests.SimpleDataPlane):
                         "reply not an error message")
         self.assertTrue(reply.err_type == ofp. OFPET_BAD_REQUEST,
                         "reply error type is not bad request")
-        self.assertTrue(reply.code == ofp.OFPBRC_BUFFER_UNKNOWN,	
+        self.assertTrue(reply.code == ofp.OFPBRC_BUFFER_UNKNOWN,
                         "reply error code is not unknown buffer code")

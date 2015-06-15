@@ -9,14 +9,14 @@ from florence import config
 import florence.controller_role_setup as role_setup
 import oftest.base_tests as base_tests
 import ofp
-from oftest.testutils import *
+import oftest.testutils as testutils
 
 
 class SetupDataPlane(base_tests.SimpleDataPlane):
     def setUp(self):
         base_tests.SimpleDataPlane.setUp(self)
-        delete_all_flows(self.controller)
-        delete_all_groups(self.controller)
+        testutils.delete_all_flows(self.controller)
+        testutils.delete_all_groups(self.controller)
 
 
 class TableId(base_tests.SimpleDataPlane):
@@ -24,9 +24,9 @@ class TableId(base_tests.SimpleDataPlane):
     Verify bad Table ID request error
     """
     def runTest(self):
-        in_port, out_port1 = openflow_ports(2)
+        in_port, out_port1 = testutils.openflow_ports(2)
 
-        delete_all_flows(self.controller)
+        testutils.delete_all_flows(self.controller)
 
         match = ofp.match([
             ofp.oxm.in_port(in_port),
@@ -57,9 +57,9 @@ class TableLoop(base_tests.SimpleDataPlane):
     Verify table loop error
     """
     def runTest(self):
-        in_port, out_port1 = openflow_ports(2)
+        in_port, out_port1 = testutils.openflow_ports(2)
 
-        delete_all_flows(self.controller)
+        testutils.delete_all_flows(self.controller)
 
         match = ofp.match([
             ofp.oxm.in_port(in_port),
@@ -92,7 +92,7 @@ class GroupId(SetupDataPlane):
     """
 
     def runTest(self):
-        port1, = openflow_ports(1)
+        port1, = testutils.openflow_ports(1)
 
         msg = ofp.message.group_add(
             group_type=ofp.OFPGT_ALL,
@@ -186,7 +186,7 @@ class RolePermissions(base_tests.SimpleDataPlane):
                 table_id=1))
 
         # Since Table Features is unsupported in OF1.3, we skip it
-        do_barrier(self.controller)
+        testutils.do_barrier(self.controller)
 
         err_count = 0
         while self.controller.packets:
