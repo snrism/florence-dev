@@ -8,40 +8,39 @@ import sys
 import signal
 import time
 import ConfigParser
-import pprint
 
 ###############################################################################
 #
 # Arguments
 #
-# Arguments can be specified directly, or via config file. 
+# Arguments can be specified directly, or via config file.
 # TODO -- Make this a separate reusable class
 #
-################################################################################
+###############################################################################
 gBasename = "ovs-ctl"
 
 gConfigParser = argparse.ArgumentParser(description=gBasename, add_help=False)
 
-gConfigParser.add_argument('-cf', '--config-file', 
-                     help="Load settings from the given config file", 
-                     nargs='+', metavar="FILE", 
-                     default=os.path.expanduser("~/."+gBasename))
+gConfigParser.add_argument('-cf', '--config-file',
+                           help="Load settings from the given config file",
+                           nargs='+', metavar="FILE",
+                           default=os.path.expanduser("~/."+gBasename))
 
-gConfigParser.add_argument('-c', '--config', 
-                     help="Use the specified configuration section", 
-                     default=None)
+gConfigParser.add_argument('-c', '--config',
+                           help="Use the specified configuration section",
+                           default=None)
 
-gConfigParser.add_argument('-d', '--default-config-file', 
-                     help="Location of the local default config file", 
-                     metavar="FILE", 
-                     default="/opt/ovs/%s-default.conf" % (gBasename))
+gConfigParser.add_argument('-d', '--default-config-file',
+                           help="Location of the local default config file",
+                           metavar="FILE",
+                           default="/opt/ovs/%s-default.conf" % (gBasename))
 
-gConfigParser.add_argument('-nd', '--no-default', 
-                     help="Do not load the default config file", 
-                     action='store_true', default=False)
+gConfigParser.add_argument('-nd', '--no-default',
+                           help="Do not load the default config file",
+                           action='store_true', default=False)
 gConfigParser.add_argument('--dump-config',
-                     help="Dump the loaded configuration settings", 
-                     action='store_true', default=False)
+                           help="Dump the loaded configuration settings",
+                           action='store_true', default=False)
 
 #
 # Parse the config files first, then parse remaining command line arguments
@@ -53,12 +52,12 @@ if not configArgs.no_default:
     gConfig.read([configArgs.default_config_file])
 
 if isinstance(configArgs.config_file, str):
-    configFiles = [ configArgs.config_file]
+    configFiles = [configArgs.config_file]
 else:
     configFiles = configArgs.config_file
 
-configFiles = [ os.path.expanduser(x) if x.startswith('~') else x 
-                for x in configFiles ]
+configFiles = [os.path.expanduser(x)
+               if x.startswith('~') else x for x in configFiles]
 
 gConfig.read(configFiles)
 
@@ -67,29 +66,29 @@ gConfig.read(configFiles)
 #
 
 #
-# OVS target binaries -- these can all be specified individually. 
+# OVS target binaries -- these can all be specified individually.
 # If not specified, they are determined by the base directory settings
 #
 gParser = argparse.ArgumentParser(parents=[gConfigParser])
 
-gParser.add_argument('--ovs-vswitchd-schema', 
+gParser.add_argument('--ovs-vswitchd-schema',
                      help="""Path to the vswitchd.ovsschema file""")
-gParser.add_argument('--ovs-vswitchd-log', 
+gParser.add_argument('--ovs-vswitchd-log',
                      help="""Path to the vswitchd log file""")
-gParser.add_argument('--ovs-vswitchd-verbosity', 
-                     help="""Set vswitchd logging level (off/emer/err/warn/info/dbg)""",
+gParser.add_argument('--ovs-vswitchd-verbosity',
+                     help="""vswitchd log level: off/emer/err/warn/info/dbg""",
                      default="dbg")
-gParser.add_argument('--ovs-vswitchd', 
+gParser.add_argument('--ovs-vswitchd',
                      help="""Path to the target ovs-vswitchd binary""")
-gParser.add_argument('--ovs-vsctl', 
+gParser.add_argument('--ovs-vsctl',
                      help="""Path to the target ovs-vsctl binary""")
-gParser.add_argument('--ovs-ofctl', 
+gParser.add_argument('--ovs-ofctl',
                      help="""Path to the target ovs-ofctl binary""")
-gParser.add_argument('--ovsdb-tool', 
+gParser.add_argument('--ovsdb-tool',
                      help="""Path to the target ovsdb-tool binary""")
-gParser.add_argument('--ovsdb-server', 
+gParser.add_argument('--ovsdb-server',
                      help="""Path to the target ovsdb-server binary""")
-gParser.add_argument('--ovs-kmod', 
+gParser.add_argument('--ovs-kmod',
                      help="""Path to the OVS kernel module""")
 gParser.add_argument('--ovs-src-dir',
                      help="""Directory for the OVS Source Files""")
@@ -101,89 +100,90 @@ gParser.add_argument('--ovs-version')
 
 gParser.add_argument("--ovs-base-dir", help="OVS Base Installation Directory")
 
-gParser.add_argument("--ovs-runtime-dir", 
-                     help="OVS Runtime Directory", 
+gParser.add_argument("--ovs-runtime-dir",
+                     help="OVS Runtime Directory",
                      default="/var/run/ovs")
 
-gParser.add_argument('--ovs-db-sock', 
+gParser.add_argument('--ovs-db-sock',
                      help="Domain Socket Location")
-                     
-gParser.add_argument('--ovs-db-file', 
+
+gParser.add_argument('--ovs-db-file',
                      help="Location for the OVS database file")
 
 
 #
 # Logging/Debugging/Testing options
 #
-gParser.add_argument('--dry', 
-                     help="""Dry run only. Don't actually do anything""", 
+gParser.add_argument('--dry',
+                     help="""Dry run only. Don't actually do anything""",
                      action='store_true',  default=False)
 
-gParser.add_argument('--log', 
-                     help='Enable logging', 
+gParser.add_argument('--log',
+                     help='Enable logging',
                      action='store_true', default=False)
 
-gParser.add_argument('--verbose', 
-                     help='Enable verbose output information', 
+gParser.add_argument('--verbose',
+                     help='Enable verbose output information',
                      action='store_true', default=False)
 
-gParser.add_argument("--kill", help="Kill running OVS", 
+gParser.add_argument("--kill", help="Kill running OVS",
                      default=False, action='store_true')
 
-gParser.add_argument("--keep-veths", 
-                     help="""By default, all existing veths will be destroyed and
-the veth module removed before initializing. If you don't want the veth module
-removed, specify this argument. Your mileage may vary if you use this.""", 
+help_text = """By default, all existing veths will be destroyed and
+the veth module removed before initializing. If you don't want
+the veth module removed, specify this argument.
+Your mileage may vary if you use this."""
+
+gParser.add_argument("--keep-veths", help=help_text,
                      default=False, action='store_true')
 
-gParser.add_argument("--no-kmod", 
-                     help="""Do not attempt to insert or remove the OVS kernel module. 
-Your mileage may vary.""", 
+help_text = """Do not attempt to insert or remove the OVS kernel module.
+Your mileage may vary."""
+gParser.add_argument("--no-kmod", help=help_text,
                      default=False, action='store_true')
 
-gParser.add_argument("--vlog", 
-                     help="""Tail the running vswitch.log file in a new xterm""", 
+help_text = """Tail the running vswitch.log file in new xterm"""
+gParser.add_argument("--vlog", help=help_text,
                      default=False, action='store_true')
 
 #
 # Runtime and setup arguments
 #
-gParser.add_argument('-p', '--port-count', type=int, 
-                     help="Number of veth ports to connect.", 
+gParser.add_argument('-p', '--port-count', type=int,
+                     help="Number of veth ports to connect.",
                      default='4')
 
 
-gParser.add_argument("--bridge", help="Name of OF OVS Bridge", 
+gParser.add_argument("--bridge", help="Name of OF OVS Bridge",
                      default="ofbr0")
 
-gParser.add_argument("--cip", help="Controller Connection", 
+gParser.add_argument("--cip", help="Controller Connection",
                      default="127.0.0.1")
 
-gParser.add_argument("--cport", type=int, help="Controller Port", 
+gParser.add_argument("--cport", type=int, help="Controller Port",
                      default=6653)
 gParser.add_argument("--dpid", help="DPID")
 
-gParser.add_argument("--max_backoff", help="VSwitchD max backoff value", 
+gParser.add_argument("--max_backoff", help="VSwitchD max backoff value",
                      default=1000, type=int)
 
+help_text = """By default, a new database is initialized at each
+execution. If you want to keep and use the old database ( if it exists ),
+use this option"""
+gParser. add_argument("--keep-db", help=help_text,
+                      action='store_true', default=False)
 
-gParser.add_argument("--keep-db", 
-                     help="""By default, a new database is initialized at each
-execution. If you want to keep and use the old database (if it exists), 
-use this option""", 
-                     action='store_true', default=False)
-
-gParser.add_argument('-lb', '--loopback',
-                     help="Create a loopback pair.  The port numbers are port_count+1 and port_count+2.", 
+help_text = """Create a loopback pair.
+The port numbers are port_count+1 and port_count+2."""
+gParser.add_argument('-lb', '--loopback', help=help_text,
                      default=False, action='store_true')
 
-
-gParser.add_argument("--cli", 
-                     help="Run the ovs-ctl cli after initialization", 
+gParser.add_argument("--cli",
+                     help="Run the ovs-ctl cli after initialization",
                      action='store_true', default=False)
 
-gParser.add_argument("--teardown", 
-                     help="Kill OVS instance after CLI exits", 
+gParser.add_argument("--teardown",
+                     help="Kill OVS instance after CLI exits",
                      action='store_true', default=False)
 
 #
@@ -196,31 +196,31 @@ if gConfig.has_section('Defaults'):
     gParser.set_defaults(**defaults)
 
 #
-# The configuration to execute might be specified in on the command line, or in the Defaults section(s)
-# of the config files. 
+# The configuration to execute might be specified in on the command line,
+# or in the Defaults section(s) of the config files.
 #
 # If its specified on the command line, it will be present in configArgs.config
-# If its specified in the section, it will only be present in the defaults dict. 
-# Need to check both. Command line takes precedence. 
+# If its specified in the section, it will only be present in the defaults dict
+# Need to check both. Command line takes precedence.
 #
 gConfigSection = None
-if configArgs.config != None:
+if configArgs.config is not None:
     gConfigSection = configArgs.config
 elif defaults.has_key('config'):
     gConfigSection = defaults['config']
 
 
-if gConfigSection != None:
+if gConfigSection is not None:
     if gConfig.has_section(gConfigSection):
         section = dict(gConfig.items(gConfigSection))
         gParser.set_defaults(**section)
     else:
-        print >>sys.stderr, "Requested configuration '%s' does not exist" % (configArgs.config)
+        print >>sys.stderr, "Config '%s' does not exist" % (configArgs.config)
         sys.exit()
 
 
 ###############################################################################
-# 
+#
 # Done with argument setup. Parser remaining arguments
 #
 ###############################################################################
@@ -231,17 +231,20 @@ gArgs = gParser.parse_args(remainingArgs)
 # At the end of all of this, we need the following things to be defined
 # or derived:
 #
+ovsschema_path = '/vswitchd/vswitch.ovsschema'
+kmod_path = '/sbin/openvswitch.ko'
 gRequiredOptions = [
-    [ 'ovs_vswitchd_schema', 'ovs_src_dir',     '/vswitchd/vswitch.ovsschema', True,  True  ], 
-    [ 'ovs_vswitchd',        'ovs_base_dir',    '/sbin/ovs-vswitchd',          True,  True  ], 
-    [ 'ovs_vsctl',           'ovs_base_dir',    '/bin/ovs-vsctl',              True,  True  ], 
-    [ 'ovs_ofctl',           'ovs_base_dir',    '/bin/ovs-ofctl',              True,  True  ], 
-    [ 'ovsdb_tool',          'ovs_base_dir',    '/bin/ovsdb-tool',             True,  True, ], 
-    [ 'ovsdb_server',        'ovs_base_dir',    '/sbin/ovsdb-server',          True,  True, ], 
-    [ 'ovs_db_file',          'ovs_base_dir',    '/ovs.db',                    False, True, ], 
-    [ 'ovs_db_sock',         'ovs_runtime_dir', '/db.sock',                    False, True, ], 
-    [ 'ovs_kmod',            'ovs_base_dir',    '/sbin/openvswitch.ko',    True,  not gArgs.no_kmod ], 
+    ['ovs_vswitchd_schema', 'ovs_src_dir', ovsschema_path, True, True],
+    ['ovs_vswitchd', 'ovs_base_dir', '/sbin/ovs-vswitchd', True,  True],
+    ['ovs_vsctl', 'ovs_base_dir', '/bin/ovs-vsctl', True,  True],
+    ['ovs_ofctl', 'ovs_base_dir', '/bin/ovs-ofctl', True,  True],
+    ['ovsdb_tool', 'ovs_base_dir', '/bin/ovsdb-tool', True,  True],
+    ['ovsdb_server', 'ovs_base_dir', '/sbin/ovsdb-server', True,  True],
+    ['ovs_db_file', 'ovs_base_dir', '/ovs.db', False, True],
+    ['ovs_db_sock', 'ovs_runtime_dir', '/db.sock', False, True],
+    ['ovs_kmod', 'ovs_base_dir', kmod_path, True, not gArgs.no_kmod],
 ]
+
 
 def __require_option(key, basedir, path, exists=True):
     value = getattr(gArgs, key)
@@ -267,37 +270,42 @@ Validated = True
 # Try to validate as many things as we can
 for option in gRequiredOptions:
     if option[4]:
-        if __require_option(option[0], option[1], option[2], option[3]) == False:
+        req_opt = __require_option(option[0], option[1], option[2], option[3])
+        if req_opt is False:
             Validated = False
 
 # If any of them failed, try to be as helpful as possible
-if Validated == False:
-    print >>sys.stdout, "\nConfiguration problem. One or more required settings are missing or could not be derived:\n"
+err_str = """\nConfiguration problem. One or more required settings are missing
+           or could not be derived:\n"""
+
+if Validated is False:
+    print >>sys.stdout, err_str
     for option in gRequiredOptions:
         if option[4] is False:
             continue
 
         value = getattr(gArgs, option[0])
         if value:
-            print >>sys.stdout, " %s: %s" % (option[0], value), 
+            print >>sys.stdout, " %s: %s" % (option[0], value),
             if option[3] and not os.path.exists(value):
                 print >>sys.stdout, "-- does not exist"
             else:
                 print "(OK)"
         else:
-            print >>sys.stdout, " %s: Unknown. " % (option[0]), 
+            print >>sys.stdout, " %s: Unknown. " % (option[0]),
             base = getattr(gArgs, option[1])
             if base:
-                print >>sys.stdout, "Search path was '%s'." % (base + option[2])
+                print >>sys.stdout, "Search path '%s'." % (base + option[2])
             else:
-                print >>sys.stdout, "Could not derive path because '%s' was also unspecified." % (option[1])
+                dpr = "Derive path err,"
+                print >>sys.stdout, dpr + " '%s' unspecified" % (option[1])
     print >>sys.stdout
     sys.exit()
 
 
 ###############################################################################
 #
-# Helpers 
+# Helpers
 #
 ###############################################################################
 
@@ -305,48 +313,52 @@ def createVeths(count):
     for idx in range(0, count):
         lcall(["/sbin/ip", "link", "add", "type", "veth"])
 
+
 def vethsUp(count):
     for idx in range(0, count*2):
         lcall(["/sbin/ifconfig", 'veth%s' % (idx), "up"])
 
-def lcall(cmd, log=gArgs.log, dry=gArgs.dry, popen=False, 
+
+def lcall(cmd, log=gArgs.log, dry=gArgs.dry, popen=False,
           pidFile=None):
-    
+
     if log or gArgs.verbose:
         print "%s: %s" % ('popen' if popen else 'call', cmd)
-    
+
     if not dry:
         if not popen:
             subprocess.call(cmd)
         else:
             p = subprocess.Popen(cmd)
-            if pidFile != None:
-                pidf = open(pidFile, "w"); 
+            if pidFile is not None:
+                pidf = open(pidFile, "w")
                 print >>pidf, p.pid
                 pidf.close()
 
-    
 
 def vsctl(argsList):
     argsList.insert(0, "--db=unix:%s" % (gArgs.ovs_db_sock))
     argsList.insert(0, gArgs.ovs_vsctl)
     lcall(argsList)
 
+
 def ofctl(argsList):
     argsList.insert(0, gArgs.ovs_ofctl)
     lcall(argsList)
+
 
 def killpid(pid):
     try:
         os.kill(pid, signal.SIGTERM)
         return False
     except OSError, e:
+        print e
         return True
 
 
 def killp(pidfile):
     if os.path.exists(pidfile):
-        pid=int(open(pidfile).read())
+        pid = int(open(pidfile).read())
         print "Killing %s, pid=%s..." % (pidfile, pid),
         if not gArgs.dry:
             while not killpid(pid):
@@ -363,7 +375,7 @@ def killp(pidfile):
 
 gServerPid = gArgs.ovs_runtime_dir + "/ovsdb-server.pid"
 gSwitchPid = gArgs.ovs_runtime_dir + "/ovs-vswitchd.pid"
-gLogPid=     gArgs.ovs_runtime_dir + "/ovs-vswitchd-tail.pid"
+gLogPid = gArgs.ovs_runtime_dir + "/ovs-vswitchd-tail.pid"
 
 # Kill previous execution based on contents of the runtime dir
 if os.path.exists(gServerPid):
@@ -381,7 +393,7 @@ def killall():
     if os.path.exists(gLogPid):
         os.remove(gLogPid)
 
-    if gArgs.keep_veths == False:
+    if gArgs.keep_veths is False:
         lcall(['/sbin/rmmod', 'veth'])
         lcall(['/sbin/modprobe', 'veth'])
 
@@ -390,7 +402,7 @@ def killall():
 
 
 killall()
-if gArgs.kill == True:
+if gArgs.kill is True:
     # Don't do anything else
     sys.exit()
 
@@ -406,12 +418,12 @@ if gArgs.loopback:
 createVeths(port_count)
 vethsUp(port_count)
 
-if not os.path.exists(gArgs.ovs_db_file) or gArgs.keep_db == False:
+if not os.path.exists(gArgs.ovs_db_file) or gArgs.keep_db is False:
     print "Initializing DB @ %s" % (gArgs.ovs_db_file)
     if os.path.exists(gArgs.ovs_db_file) and not gArgs.dry:
         os.remove(gArgs.ovs_db_file)
 
-    lcall([gArgs.ovsdb_tool, "create", gArgs.ovs_db_file, 
+    lcall([gArgs.ovsdb_tool, "create", gArgs.ovs_db_file,
            gArgs.ovs_vswitchd_schema])
 else:
     print "Keeping existing DB @ %s" % (gArgs.ovs_db_file)
@@ -421,19 +433,17 @@ if not os.path.exists(gArgs.ovs_runtime_dir):
     os.makedirs(gArgs.ovs_runtime_dir)
 
 # Start dbserver
-lcall([gArgs.ovsdb_server, gArgs.ovs_db_file, 
-       "--remote=punix:%s" % (gArgs.ovs_db_sock), 
+lcall([gArgs.ovsdb_server, gArgs.ovs_db_file,
+       "--remote=punix:%s" % (gArgs.ovs_db_sock),
        "--detach", "--pidfile=%s" % (gServerPid)])
 
 # Init db
 vsctl(["--no-wait", "init"])
 
 # Start vswitchd
-startV = [ gArgs.ovs_vswitchd, 
-          "unix:%s" % (gArgs.ovs_db_sock), 
-          "--verbose=%s" % gArgs.ovs_vswitchd_verbosity,
-          "--detach",
-          "--pidfile=%s" % (gSwitchPid) ]
+startV = [gArgs.ovs_vswitchd, "unix:%s" % (gArgs.ovs_db_sock),
+          "--verbose=%s" % gArgs.ovs_vswitchd_verbosity, "--detach",
+          "--pidfile=%s" % (gSwitchPid)]
 
 if gArgs.ovs_vswitchd_log:
     startV.append("--log-file=%s" % (gArgs.ovs_vswitchd_log))
@@ -441,8 +451,8 @@ if gArgs.ovs_vswitchd_log:
 lcall(startV)
 
 if gArgs.vlog:
-    lcall(["xterm", "-T", "vswitchd-log", "-e", "tail", "-f", 
-           gArgs.ovs_vswitchd_log], 
+    lcall(["xterm", "-T", "vswitchd-log", "-e", "tail", "-f",
+           gArgs.ovs_vswitchd_log],
           popen=True, pidFile=gLogPid)
 
 
@@ -462,14 +472,14 @@ if gArgs.loopback:
 
 if gArgs.dpid:
     vsctl(["set", "bridge", gArgs.bridge, "other-config:datapath-id=%s" % (
-                gArgs.dpid)])
+          gArgs.dpid)])
 
 # Set controller
 vsctl(["set-controller", gArgs.bridge, "tcp:%s:%s" % (
-        gArgs.cip, gArgs.cport)])
+      gArgs.cip, gArgs.cport)])
 
 # Minimize default backoff for controller connections
-vsctl(["set", "Controller", gArgs.bridge, 
+vsctl(["set", "Controller", gArgs.bridge,
        "max_backoff=%s" % (gArgs.max_backoff)])
 
 
@@ -488,13 +498,12 @@ if gArgs.cli:
             elif args[0] == "dumpflows" or args[0] == "flowtable":
                 ofctl(["dump-flows", "%s" % gArgs.bridge])
             elif args[0] == "exit" or args[0] == "quit":
-                break; 
+                break
             elif args[0] == "kill":
                 gArgs.teardown = True
                 break
             else:
                 print "unknown command '%s'" % args[0]
-            
 
 if gArgs.teardown:
     print "Killing OVS"
