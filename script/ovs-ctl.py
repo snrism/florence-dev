@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# OVS Configuration - Helper Function from OFTest
+# OVS Configuration - Helper File from OFTest
 
 import os
 import subprocess
