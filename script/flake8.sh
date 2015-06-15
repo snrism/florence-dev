@@ -1,4 +1,3 @@
 #!/bin/bash
-dir=pwd
-parentdir="$(dirname "$dir")"
-flake8 $parentdir/test/*.py $parentdir/src/florence/*.py
+dir="$(dirname "$pwd")"
+flake8 $dir/test/*.py $dir/src/florence/*.py $dir/script/*.py
