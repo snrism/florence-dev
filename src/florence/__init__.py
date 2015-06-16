@@ -21,6 +21,7 @@ CONFIG_DEFAULT = {
     # Miscellaneous options
     "list": False,
     "list_test_names": False,
+    "allow_user": False,
 
     # Test selection options
     "test_spec": "",

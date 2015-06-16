@@ -13,7 +13,9 @@ Currently, florence can:
 * Connect to a OpenFlow switch and generate security tests to validate
   the secureness and implementation robustness of the switch.
 * Uses OpenFlow 1.3.5 version as the reference specification
-* Connects to an OpenvSwitch based switch.
+* Connects to OpenvSwitch
+
+Please check [ROADMAP](ROADMAP.md) for our upcoming features.
 
 ---
 
@@ -90,11 +92,10 @@ You can contribute to florence in mulitple ways:
 
 # Notes
 
-florence is a fork of OFTest
-(https://github.com/floodlight/oftest) and uses it as a library to build
-new security test cases. While the initial codebase leverages some of
-the core functionalities of OFTest, our plan is to extend the flornce to
-test the controller component and additional southbound interfaces as
-well.
+florence is a fork of [OFTest](https://github.com/floodlight/oftest)
+and uses it as a library to build new security test cases. While the
+initial codebase leverages some of the core functionalities of OFTest,
+our plan is to extend florence to test the controller solutions and
+additional southbound interfaces as well.
 
 ---
