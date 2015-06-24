@@ -43,7 +43,7 @@ def florence_arg_setup():
                         help="List all tests and exit")
     parser.add_argument("--list-test-names", action='store_true',
                         help="List test names matching the test spec and exit")
-    parser.add_option("--allow-user", action="store_true",
+    parser.add_argument("--allow-user", action="store_true",
                       help="Proceed even if oftest is not run as root")
 
     # Test options
