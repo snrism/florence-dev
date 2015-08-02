@@ -4,6 +4,7 @@ import logging
 import types
 import time
 import re
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import packet as scapy
 
 import oftest
