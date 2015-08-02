@@ -5,12 +5,26 @@ Test cases in other modules depend on this functionality.
 """
 
 import logging
-from florence import config
+from florence import config, Color
 import florence.controller_role_setup as role_setup
 import florence.malformed_message as malformed_message
 import oftest.base_tests as base_tests
 import ofp
 import oftest.testutils as testutils
+import sys
+
+
+PASS = Color.PASS + "[PASS]" + Color.END
+FAIL = Color.FAIL + "[FAIL]" + Color.END
+INFO = Color.INFO + "[INFO]" + Color.END
+
+# Logger to output test case results
+log = logging.getLogger(__name__)
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter('%(message)s'))
+handler.setLevel(logging.INFO)
+log.addHandler(handler)
+log.setLevel(logging.INFO)
 
 
 class SetupDataPlane(base_tests.SimpleDataPlane):
@@ -26,17 +40,20 @@ class PortRange(base_tests.SimpleDataPlane):
     OFPP_MAX and are not part of the reserved ports.
     """
     def runTest(self):
-        logging.info("Testing for bad port modification message")
         request = ofp.message.port_mod(port_no=ofp.OFPP_ANY,)
         reply, pkt = self.controller.transact(request)
-        self.assertTrue(reply is not None,
-                        "No response to bad port mod")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_PORT_MOD_FAILED,
-                        "reply error type is not bad port mod")
-        self.assertTrue(reply.code == ofp.OFPPMFC_BAD_PORT,
-                        "reply error code is not bad port")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to bad port mod")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_PORT_MOD_FAILED,
+                            "Reply error type is not bad port mod request")
+            self.assertTrue(reply.code == ofp.OFPPMFC_BAD_PORT,
+                           "Reply code is not bad port")
+            log.info(PASS + " 1.1.10 - Port Range Violation")
+        except AssertionError:
+            log.info(FAIL + " 1.1.10 - Port Range Violation")
 
 
 class TableId(base_tests.SimpleDataPlane):
@@ -45,7 +62,6 @@ class TableId(base_tests.SimpleDataPlane):
     """
     def runTest(self):
         in_port, out_port1 = testutils.openflow_ports(2)
-
         testutils.delete_all_flows(self.controller)
 
         match = ofp.match([
@@ -61,15 +77,18 @@ class TableId(base_tests.SimpleDataPlane):
                                        priority=priority,
                                        flags=ofp.OFPFF_SEND_FLOW_REM)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None,
-                        "No response to malformed table ID")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_FLOW_MOD_FAILED,
-                        "reply error type is not flow mod failed")
-        self.assertTrue(reply.code == ofp.OFPFMFC_BAD_TABLE_ID,
-                        "reply error code is not bad table id")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to malformed table ID")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_FLOW_MOD_FAILED,
+                            "Reply error type is not flow mod failed")
+            self.assertTrue(reply.code == ofp.OFPFMFC_BAD_TABLE_ID,
+                            "Reply error code is not bad table ID")
+            log.info(PASS + " 1.1.20 - Table Identifier Violation")
+        except AssertionError:
+            log.info(FAIL + " 1.1.20 - Table Identifier Violation")
 
 
 class GroupId(SetupDataPlane):
@@ -87,14 +106,18 @@ class GroupId(SetupDataPlane):
                 ofp.bucket(actions=[ofp.action.output(port1)])])
         logging.info("Sending group add request")
         reply, pkt = self.controller.transact(msg)
-        self.assertTrue(reply is not None,
-                        "No response to group add request")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_GROUP_MOD_FAILED,
-                        "reply error type is not bad group mod request")
-        self.assertTrue(reply.code == ofp.OFPGMFC_INVALID_GROUP,
-                        "reply code is not invalid group")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to group add request")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_GROUP_MOD_FAILED,
+                            "Reply error type is not bad group mod request")
+            self.assertTrue(reply.code == ofp.OFPGMFC_INVALID_GROUP,
+                           "Reply code is not invalid group")
+            log.info(PASS + " 1.1.30 - Group Identifier Violation")
+        except AssertionError:
+            log.info(FAIL + " 1.1.30 - Group Identifier Violation")
 
 
 class MeterId(base_tests.SimpleDataPlane):
@@ -103,17 +126,20 @@ class MeterId(base_tests.SimpleDataPlane):
     OFPM_MAX and are not part of the virtual meters.
     """
     def runTest(self):
-        logging.info("Testing for bad meter modification message")
         request = ofp.message.meter_mod(meter_id=ofp.OFPM_ALL,)
         reply, pkt = self.controller.transact(request)
-        self.assertTrue(reply is not None,
-                        "No response to bad meter mod")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_METER_MOD_FAILED,
-                        "reply error type is not bad meter mod")
-        self.assertTrue(reply.code == ofp.OFPMMFC_INVALID_METER,
-                        "reply error code is not bad meter id")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to bad meter mod")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_METER_MOD_FAILED,
+                            "Reply error type is not bad meter mod")
+            self.assertTrue(reply.code == ofp.OFPMMFC_INVALID_METER,
+                           "Reply code is not invalid meter")
+            log.info(PASS + " 1.1.40 - Meter Identifier Violation")
+        except AssertionError:
+            log.info(FAIL + " 1.1.40 - Meter Identifier Violation")
 
 
 class TableLoop(base_tests.SimpleDataPlane):
@@ -140,15 +166,18 @@ class TableLoop(base_tests.SimpleDataPlane):
                                        priority=priority,
                                        flags=ofp.OFPFF_SEND_FLOW_REM)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None,
-                        "No response to table loop error")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_BAD_INSTRUCTION,
-                        "reply error type is not bad request")
-        self.assertTrue(reply.code == ofp.OFPBIC_BAD_TABLE_ID,
-                        "reply error code is not bad table id")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to table loop error")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_INSTRUCTION,
+                            "Reply error type is not bad instruction request")
+            self.assertTrue(reply.code == ofp.OFPBIC_BAD_TABLE_ID,
+                           "Reply error code is not bad table id")
+            log.info(PASS + " 1.1.50 - Table Loop Violation")
+        except AssertionError:
+            log.info(FAIL + " 1.1.50 - Table Loop Violation")
 
 
 class UnsupportedMessageType(base_tests.SimpleProtocol):
@@ -157,18 +186,21 @@ class UnsupportedMessageType(base_tests.SimpleProtocol):
     with unsupported message type.
     """
     def runTest(self):
-        logging.info("Running " + str(self))
         request = malformed_message.malformed_message(version=4, type=97)
 
         reply, pkt = self.controller.transact(request)
-        self.assertTrue(reply is not None,
-                        "No response to malformed message type")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
-                        "reply error type is not bad request")
-        self.assertTrue(reply.code == ofp.OFPBRC_BAD_TYPE,
-                        "reply error code is not bad type")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to unsupported message type")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
+                            "Reply error type is not bad request")
+            self.assertTrue(reply.code == ofp.OFPBRC_BAD_TYPE,
+                           "Reply error code is not bad type")
+            log.info(PASS + " 1.1.60 - Unsupported Message Type")
+        except AssertionError:
+            log.info(FAIL + " 1.1.60 - Unsupported Message Type")
 
 
 class UnsupportedVersionNumber(base_tests.SimpleProtocol):
@@ -177,18 +209,21 @@ class UnsupportedVersionNumber(base_tests.SimpleProtocol):
     message with an unsupported version number.
     """
     def runTest(self):
-        logging.info("Running " + str(self))
         request = malformed_message.malformed_message(version=5, type=10)
 
         reply, pkt = self.controller.transact(request)
-        self.assertTrue(reply is not None,
-                        "No response to malformed message version")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
-                        "reply error type is not bad request")
-        self.assertTrue(reply.code == ofp.OFPBRC_BAD_VERSION,
-                        "reply error code is not bad type")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to unsupported version number")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
+                            "Reply error type is not bad request")
+            self.assertTrue(reply.code == ofp.OFPBRC_BAD_VERSION,
+                           "Reply error code is not bad version")
+            log.info(PASS + " 1.1.70 - Unsupported Version Number")
+        except AssertionError:
+            log.info(FAIL + " 1.1.70 - Unsupported Version Number")
 
 
 class MalformedVersionNumber(base_tests.SimpleProtocol):
@@ -198,17 +233,21 @@ class MalformedVersionNumber(base_tests.SimpleProtocol):
     controller with a different version.
     """
     def runTest(self):
-        logging.info("Running " + str(self))
         request = malformed_message.malformed_message(version=0, type=0)
 
         reply, pkt = self.controller.transact(request)
-        self.assertTrue(reply is not None, "No response to unsupported hello")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
-                        "reply error type is not bad request")
-        self.assertTrue(reply.code == ofp.OFPET_HELLO_FAILED,
-                        "reply error code is not bad type")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to malformed version number")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
+                            "Reply error type is not bad request")
+            self.assertTrue(reply.code == ofp.OFPET_HELLO_FAILED,
+                           "Reply error code is not hello failed")
+            log.info(PASS + " 1.1.80 - Malformed Version Number")
+        except AssertionError:
+            log.info(FAIL + " 1.1.80 - Malformed Version Number")
 
 
 class InvalidOXMType(base_tests.SimpleDataPlane):
@@ -233,15 +272,18 @@ class InvalidOXMType(base_tests.SimpleDataPlane):
                                        instructions=[inst],
                                        hard_timeout=1000)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None,
-                        "No response to malformed control message type")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
-                        "reply error type is not bad request")
-        self.assertTrue(reply.code == ofp.OFPFMFC_BAD_COMMAND,
-                        "reply error code is not bad timeout")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to invalid OXM type")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
+                            "Reply error type is not bad request")
+            self.assertTrue(reply.code == ofp.OFPFMFC_BAD_COMMAND,
+                           "Reply error code is not bad command")
+            log.info(PASS + " 1.1.90 - Invalid OXM - Type")
+        except AssertionError:
+            log.info(FAIL + " 1.1.90 - Invalid OXM - Type")
 
 
 class InvalidOXMLength(base_tests.SimpleDataPlane):
@@ -267,14 +309,18 @@ class InvalidOXMLength(base_tests.SimpleDataPlane):
                                        hard_timeout=1000,
                                        length=10000)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None, "No response to bad match length")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_BAD_MATCH,
-                        "reply error type is not bad match request")
-        self.assertTrue(reply.code == ofp.OFPBMC_BAD_LEN,
-                        "reply error code is not bad match length")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to invalid OXM length")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_MATCH,
+                            "Reply error type is not bad match request")
+            self.assertTrue(reply.code == ofp.OFPBMC_BAD_LEN,
+                           "Reply error code is not bad match length")
+            log.info(PASS + " 1.1.100 - Invalid OXM - Length")
+        except AssertionError:
+            log.info(FAIL + " 1.1.100 - Invalid OXM - Length")
 
 
 class InvalidOXMValue(base_tests.SimpleDataPlane):
@@ -299,14 +345,18 @@ class InvalidOXMValue(base_tests.SimpleDataPlane):
                                        instructions=[inst],
                                        hard_timeout=1000,)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None, "No response to bad match value")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_BAD_MATCH,
-                        "reply error type is not bad match request")
-        self.assertTrue(reply.code == ofp.OFPBMC_BAD_VALUE,
-                        "reply error code is not bad match value")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to invalid OXM value")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_MATCH,
+                            "Reply error type is not bad match request")
+            self.assertTrue(reply.code == ofp.OFPBMC_BAD_VALUE,
+                           "Reply error code is not bad match value")
+            log.info(PASS + " 1.1.110 - Invalid OXM - Value")
+        except AssertionError:
+            log.info(FAIL + " 1.1.110 - Invalid OXM - Value")
 
 
 class DisabledTableFeatureRequest(base_tests.SimpleProtocol):
@@ -327,9 +377,13 @@ class HandshakeWithoutHello(base_tests.Handshake):
         self.controllerSetup(config["controller_host"],
                              config["controller_port"])
         self.controllers[0].connect(self.default_timeout)
-        # wait for controller to die
-        self.assertTrue(self.controllers[0].wait_disconnected(timeout=10),
-                        "Not notified of controller disconnect")
+        try:
+            # wait for controller to die
+            self.assertTrue(self.controllers[0].wait_disconnected(timeout=10),
+                            "Not notified about controller disconnect")
+            log.info(PASS + " 1.1.130 - Handshake without Hello Message")
+        except AssertionError:
+            log.info(FAIL + " 1.1.130 - Handshake without Hello Message")
 
 
 class ControlMsgBeforeHello(base_tests.Handshake):
@@ -349,11 +403,15 @@ class ControlMsgBeforeHello(base_tests.Handshake):
         barrier_req = ofp.message.barrier_request()
         reply, pkt = self.controllers[0].transact(barrier_req,
                                                   self.default_timeout)
-        self.assertTrue(reply is None,
-                        "Got response to control message before Hello")
+        try:
+            self.assertTrue(reply is None,
+                            "Got response to control message before Hello")
+            log.info(PASS + " 1.1.140 - Control Message before Hello Message")
+        except AssertionError:
+            log.info(FAIL + " 1.1.140 - Control Message before Hello Message")
 
 
-class MalformedHelloAfterConnection(base_tests.Handshake):
+class IncompatibleHelloAfterConnection(base_tests.Handshake):
     """
     Verify that the switch will properly handle the abnormal condition,
     when it receives an OFPT_ERROR message with a type field of
@@ -361,7 +419,6 @@ class MalformedHelloAfterConnection(base_tests.Handshake):
     connection between switch and controller with a both agreed version.
     """
     def runTest(self):
-        logging.info("Running " + str(self))
         self.controllerSetup(config["controller_host"],
                              config["controller_port"])
         self.controllers[0].connect(self.default_timeout)
@@ -372,9 +429,15 @@ class MalformedHelloAfterConnection(base_tests.Handshake):
         request = ofp.message.hello_failed_error_msg(code=0)
         reply, pkt = self.controllers[0].transact(request,
                                                   self.default_timeout)
-        self.assertTrue(reply is None,
-                        """Response received for incompatible hello. """
-                        """Requested not rejected or connection not closed""")
+        try:
+            self.assertTrue(reply is None,
+                            """Response received for incompatible hello. """
+                            """Request not rejected/connection not closed""")
+            log.info(PASS + " 1.1.150 - Incompatible Hello"
+                     + " after Connection Establishment")
+        except AssertionError:
+            log.info(FAIL + " 1.1.150 - Incompatible Hello"
+                     + " after Connection Establishment")
 
 
 class CorruptedCookieValue(base_tests.SimpleDataPlane):
@@ -397,15 +460,18 @@ class CorruptedCookieValue(base_tests.SimpleDataPlane):
                                        buffer_id=ofp.OFP_NO_BUFFER,
                                        cookie=0xfffffffffffffff,)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None,
-                        "No response to malformed cookie value")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_FLOW_MOD_FAILED,
-                        "reply error type is not flow mod failed")
-        self.assertTrue(reply.code == ofp.OFPFMFC_UNKNOWN,
-                        "reply error code is not unknown code type")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to corrupted cookie value")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_FLOW_MOD_FAILED,
+                            "Reply error type is not flow mod failed")
+            self.assertTrue(reply.code == ofp.OFPFMFC_UNKNOWN,
+                           "Reply error code is not unknown code type")
+            log.info(PASS + " 1.1.160 - Corrupted Cookie Values")
+        except AssertionError:
+            log.info(FAIL + " 1.1.160 - Corrupted Cookie Values")
 
 
 class MalformedBufferIDValue(base_tests.SimpleDataPlane):
@@ -426,15 +492,18 @@ class MalformedBufferIDValue(base_tests.SimpleDataPlane):
                                        instructions=[inst],
                                        buffer_id=1243,)
         reply, pkt = self.controller.transact(request)
-
-        self.assertTrue(reply is not None,
-                        "No response to malformed cookie value")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp. OFPET_BAD_REQUEST,
-                        "reply error type is not bad request")
-        self.assertTrue(reply.code == ofp.OFPBRC_BUFFER_UNKNOWN,
-                        "reply error code is not unknown buffer code")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to malformed cookie value")
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+            self.assertTrue(reply.err_type == ofp.OFPET_BAD_REQUEST,
+                            "Reply error type is not bad request")
+            self.assertTrue(reply.code == ofp.OFPBRC_BUFFER_UNKNOWN,
+                           "Reply error code is not unknown buffer code")
+            log.info(PASS + " 1.1.170 - Malformed Buffer ID Values")
+        except AssertionError:
+            log.info(FAIL + " 1.1.170 - Malformed Buffer ID Values")
 
 
 class SlaveControllerViolation(base_tests.SimpleDataPlane):
@@ -445,7 +514,6 @@ class SlaveControllerViolation(base_tests.SimpleDataPlane):
     from slave controllers.
     """
     def runTest(self):
-
         role, gen = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
         role_setup.request(self, ofp.OFPCR_ROLE_SLAVE, gen)
 
@@ -487,8 +555,12 @@ class SlaveControllerViolation(base_tests.SimpleDataPlane):
                 self.assertEquals(msg.err_type, ofp.OFPET_BAD_REQUEST)
                 self.assertEquals(msg.code, ofp.OFPBRC_EPERM)
                 err_count += 1
-
-        self.assertEquals(err_count, 5, "Expected errors for each message")
+        try:
+            self.assertEquals(err_count, 5,
+                              "Expected errors for each message")
+            log.info(PASS + " 1.2.10 - Slave Controller Violation")
+        except AssertionError:
+            log.info(FAIL + " 1.2.10 - Slave Controller Violation")
 
 
 class CorruptedGenerationID(base_tests.SimpleDataPlane):
@@ -498,11 +570,23 @@ class CorruptedGenerationID(base_tests.SimpleDataPlane):
     """
     def runTest(self):
         role, gen = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
-        role_setup.error(self, ofp.OFPCR_ROLE_MASTER, gen-1, ofp.OFPRRFC_STALE)
+        try:
+            role_setup.error(self,
+                             ofp.OFPCR_ROLE_MASTER,
+                             gen-1,
+                             ofp.OFPRRFC_STALE)
+        except AssertionError:
+            log.error(FAIL + " -> Corrupted Generation ID processed")
 
         role1, gen1 = role_setup.request(self, ofp.OFPCR_ROLE_NOCHANGE)
-        role_setup.error(self, ofp.OFPCR_ROLE_SLAVE, gen1-1, ofp.OFPRRFC_STALE)
-
+        try:
+            role_setup.error(self,
+                             ofp.OFPCR_ROLE_SLAVE,
+                             gen1-1,
+                             ofp.OFPRRFC_STALE)
+            log.info(PASS + " 1.2.20 - Corrupted Generation ID")
+        except AssertionError:
+            log.info(FAIL + " 1.2.20 - Corrupted Generation ID")
 
 
 class AuxConnectionTermination(base_tests.SimpleProtocol):

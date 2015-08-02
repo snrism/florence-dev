@@ -59,3 +59,13 @@ CONFIG_DEFAULT = {
     # Other configuration
     "port_map": {},
 }
+
+class Color:
+    """
+    Helper class to output test case results
+    """
+    INFO= '\033[94m'
+    PASS = '\033[92m'
+    WARN = '\033[93m'
+    FAIL = '\033[91m'
+    END = '\033[0m'
