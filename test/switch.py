@@ -5,12 +5,26 @@ Test cases in other modules depend on this functionality.
 """
 
 import logging
-from florence import config
+from florence import config, Color
 import florence.controller_role_setup as role_setup
 import florence.malformed_message as malformed_message
 import oftest.base_tests as base_tests
 import ofp
 import oftest.testutils as testutils
+import sys
+
+
+PASS = Color.PASS + "[PASS]" + Color.END
+FAIL = Color.FAIL + "[FAIL]" + Color.END
+INFO = Color.INFO + "[INFO]" + Color.END
+
+# Logger to output test case results
+log = logging.getLogger(__name__)
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter('%(message)s'))
+handler.setLevel(logging.INFO)
+log.addHandler(handler)
+log.setLevel(logging.INFO)
 
 
 class SetupDataPlane(base_tests.SimpleDataPlane):
@@ -78,6 +92,7 @@ class GroupId(SetupDataPlane):
     OFPG_MAX and are not part of the reserved groups.
     """
     def runTest(self):
+        log.info(INFO + " 1.1.30 - " + self.__class__.__name__)
         port1, = testutils.openflow_ports(1)
 
         msg = ofp.message.group_add(
@@ -87,14 +102,26 @@ class GroupId(SetupDataPlane):
                 ofp.bucket(actions=[ofp.action.output(port1)])])
         logging.info("Sending group add request")
         reply, pkt = self.controller.transact(msg)
-        self.assertTrue(reply is not None,
-                        "No response to group add request")
-        self.assertTrue(reply.type == ofp.OFPT_ERROR,
-                        "reply not an error message")
-        self.assertTrue(reply.err_type == ofp.OFPET_GROUP_MOD_FAILED,
-                        "reply error type is not bad group mod request")
-        self.assertTrue(reply.code == ofp.OFPGMFC_INVALID_GROUP,
-                        "reply code is not invalid group")
+        try:
+            self.assertTrue(reply is not None,
+                            "No response to group add request")
+        except AssertionError:
+            log.error(FAIL + " -> No response to group add request")
+        try:
+            self.assertTrue(reply.type == ofp.OFPT_ERROR,
+                            "Reply not an error message")
+        except AssertionError:
+            log.error(FAIL + " -> Reply not an error message")
+        try:
+            self.assertTrue(reply.err_type == ofp.OFPET_GROUP_MOD_FAILED,
+                            "Reply error type is not bad group mod request")
+        except AssertionError:
+            log.error(FAIL + " -> Reply error type is not bad group mod request")
+        try:
+            self.assertTrue(reply.code == ofp.OFPGMFC_INVALID_GROUP,
+                           "Reply code is not invalid group")
+        except AssertionError:
+            log.error(FAIL + " -> Reply code is not invalid group") 
 
 
 class MeterId(base_tests.SimpleDataPlane):
