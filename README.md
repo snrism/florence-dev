@@ -63,19 +63,14 @@ To run the entire set of test cases:
 $ ./florence
 ```
 
-To determine how the switch handles malformed control messages:
+To run the test cases specific to the switch:
 ```sh
-$ ./florence malformed
-```
-
-To determine how the switch handles control message violations:
-```sh
-$ ./florence violations
+$ ./florence switch
 ```
 
 To run a specific test case:
 ```sh
-$ ./florence violations.TableLoop
+$ ./florence switch.TableLoop
 ```
 
 ---
