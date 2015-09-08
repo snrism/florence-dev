@@ -56,6 +56,11 @@ CONFIG_DEFAULT = {
     "disable_ipv6": False,
     "random_order": False,
 
+    # Secure channel options
+    "key": "tls/ctl-privkey.pem",
+    "cert":"tls/ctl-cert.pem" ,
+    "ca_certs": "/var/lib/openvswitch/pki/switchca/cacert.pem",
+
     # Other configuration
     "port_map": {},
 }

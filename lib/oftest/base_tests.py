@@ -86,7 +86,7 @@ class SimpleProtocol(BaseTest):
                           + str(parent))
         self.controller = parent.controller
         self.supported_actions = parent.supported_actions
-        
+
     def tearDown(self):
         self.controller.shutdown()
         self.controller.join()
@@ -180,3 +180,45 @@ class Handshake(BaseTest):
         if not cond:
             logging.error("** FAILED ASSERTION: " + msg)
         unittest.TestCase.assertTrue(self, cond, msg)
+
+class SecureChannel(BaseTest):
+    """
+    Root class for setting up a secure connection with DUT.
+    """
+
+    def setUp(self):
+        BaseTest.setUp(self)
+
+        self.controller = controller.Controller(
+            switch=config["switch_ip"],
+            host=config["controller_host"],
+            port=config["controller_port"])
+        self.controller.start()
+
+        try:
+            self.controller.secure_connect(config["key"],
+                                           config["cert"],
+                                           config["ca_certs"],
+                                           timeout=20)
+
+            # Wrap connection with SSL options
+
+            # By default, respond to echo requests
+            self.controller.keep_alive = True
+
+            if not self.controller.active:
+                raise Exception("Controller startup failed")
+            if self.controller.switch_addr is None:
+                raise Exception("Controller startup failed (no switch addr)")
+            logging.info("Connected " + str(self.controller.switch_addr))
+            request = ofp.message.features_request()
+            reply, pkt = self.controller.transact(request)
+            self.assertTrue(reply is not None,
+                            "Did not complete features_request for handshake")
+            if reply.version == 1:
+                self.supported_actions = reply.actions
+                logging.info("Supported actions: " + hex(self.supported_actions))
+        except:
+            self.controller.kill()
+            del self.controller
+            raise

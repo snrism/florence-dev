@@ -485,7 +485,57 @@ class Controller(Thread):
                                    timeout=timeout)
 
         return self.switch_socket is not None
-        
+
+    def ssl_connection(self, key, cert, cacert):
+        try:
+            self.logger.info("Trying SSL connection setup to %s" % self.switch)
+            soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            ssl_sock = ssl.wrap_socket(soc,
+                                       keyfile=key,
+                                       certfile=cert,
+                                       ca_certs=cacert,
+                                       cert_reqs=ssl.CERT_REQUIRED)
+            ssl_sock.connect((self.switch, self.port))
+            self.logger.info("Securely Connected to " + self.switch + " on " +
+                         str(self.port))
+            ssl_sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
+            self.switch_addr = (self.switch, self.port)
+            return ssl_sock
+        except (StandardError, socket.error), e:
+            self.logger.error("Could not connect to %s at %d:: %s" %
+                              (self.switch, self.port, str(e)))
+        return None
+
+    def secure_connect(self, key, cert, cacert, timeout=-1):
+        """
+        Securely connect to the switch
+
+        @param timeout Block for up to timeout seconds. Pass -1 for the default.
+        @return Boolean, True if connected
+        """
+
+        if not self.passive:  # Do secure connection now
+            self.logger.info("Attempting to securely connect to %s on port %s" %
+                             (self.switch, str(self.port)))
+            soc = self.ssl_connection(key, cert, cacert)
+            if soc:
+                self.logger.info("Connected to %s", self.switch)
+                self.dbg_state = "running"
+                self.switch_socket = soc
+                self.wakeup()
+                with self.connect_cv:
+                    if self.initial_hello:
+                        self.message_send(cfg_ofp.message.hello())
+                    self.connect_cv.notify() # Notify anyone waiting
+            else:
+                self.logger.error("Could not actively connect to switch %s",
+                                  self.switch)
+                self.active = False
+        else:
+            with self.connect_cv:
+                ofutils.timed_wait(self.connect_cv, lambda: self.switch_socket,
+                                   timeout=timeout)
+
     def disconnect(self, timeout=-1):
         """
         If connected to a switch, disconnect.
