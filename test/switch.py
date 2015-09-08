@@ -578,18 +578,17 @@ class SlaveControllerViolation(base_tests.SimpleDataPlane):
 
         # Since Table Features is unsupported in OF1.3, we skip it
         testutils.do_barrier(self.controller)
-
-        err_count = 0
-        while self.controller.packets:
-            msg = self.controller.packets.pop(0)[0]
-            if msg.type == ofp.OFPT_ERROR:
-                self.assertEquals(msg.err_type, ofp.OFPET_BAD_REQUEST)
-                self.assertEquals(msg.code, ofp.OFPBRC_EPERM)
-                err_count += 1
         try:
-            self.assertEquals(err_count, 5,
-                              "Expected errors for each message")
-            log.info(PASS + INFO)
+            err_count = 0
+            while self.controller.packets:
+                msg = self.controller.packets.pop(0)[0]
+                if msg.type == ofp.OFPT_ERROR:
+                    self.assertEquals(msg.err_type, ofp.OFPET_BAD_REQUEST)
+                    self.assertEquals(msg.code, ofp.OFPBRC_EPERM)
+                    err_count += 1
+                self.assertEquals(err_count, 5,
+                                  "Expected errors for each message")
+                log.info(PASS + INFO)
         except AssertionError, Err:
             log.info(FAIL + INFO)
             log.info(REASON + " -> "+ str(Err))
